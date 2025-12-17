@@ -1,0 +1,56 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace DigitalCap.Core.Models
+{
+    public class ServiceResult<T>
+    {
+        public bool IsSuccess { get; set; }
+        public T Data { get; set; }
+        public List<string> ErrorMessages { get; set; } = new List<string>();
+        public string ErrorCode { get; set; }
+
+        // Convenience property to get the first error message
+        public string ErrorMessage => ErrorMessages?.FirstOrDefault();
+
+        public static ServiceResult<T> Success(T data)
+        {
+            return new ServiceResult<T> { IsSuccess = true, Data = data };
+        }
+
+        public static ServiceResult<T> Failure(string errorMessage, string errorCode = null)
+        {
+            return new ServiceResult<T>
+            {
+                IsSuccess = false,
+                ErrorMessages = new List<string> { errorMessage },
+                ErrorCode = errorCode
+            };
+        }
+
+        public static ServiceResult<T> Failure(List<string> errorMessages, string errorCode = null)
+        {
+            return new ServiceResult<T>
+            {
+                IsSuccess = false,
+                ErrorMessages = errorMessages ?? new List<string>(),
+                ErrorCode = errorCode
+            };
+        }
+
+        // Method to add additional error messages
+        public void AddError(string errorMessage)
+        {
+            ErrorMessages.Add(errorMessage);
+            IsSuccess = false;
+        }
+
+        // Method to add multiple error messages
+        public void AddErrors(IEnumerable<string> errorMessages)
+        {
+            ErrorMessages.AddRange(errorMessages);
+            IsSuccess = false;
+        }
+    }
+}
