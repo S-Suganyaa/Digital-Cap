@@ -29,40 +29,42 @@ namespace DigitalCap.WebApi.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<ServiceResult<Project>> GetProject(int id)
         {
             var project = await _projectService.GetProject(id);
 
             if (project == null)
-                return NotFound();
+                return ServiceResult<Project>.Failure("Project not found");
 
-            return Ok(project);
+            return ServiceResult<Project>.Success(project.Data);
         }
 
-        [HttpPost("[action]")]
-        public async Task<IActionResult> Update(int id, [FromBody] Project model)
-        {
-            if (id != model.ID)
-                return BadRequest("Id mismatch");
 
-            await _projectService.Update(model);
-            return NoContent();
-        }
 
-        [HttpGet("[action]")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            await _projectService.DeleteProject(id, userId);
-            return NoContent();
-        }
+        //[HttpPost("[action]")]
+        //public async Task<IActionResult> Update(int id, [FromBody] Project model)
+        //{
+        //    if (id != model.ID)
+        //        return BadRequest("Id mismatch");
 
-        [HttpGet("[action]")]
-        public async Task<IActionResult> GetAll()
-        {
-            var projects = await _projectService.GetAllProjects();
-            return Ok(projects);
-        }
+        //    await _projectService.Update(model);
+        //    return NoContent();
+        //}
+
+        //[HttpGet("[action]")]
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //    var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        //    await _projectService.DeleteProject(id, userId);
+        //    return NoContent();
+        //}
+
+        //[HttpGet("[action]")]
+        //public async Task<IActionResult> GetAll()
+        //{
+        //    var projects = await _projectService.GetAllProjects();
+        //    return Ok(projects);
+        //}
 
     }
 }

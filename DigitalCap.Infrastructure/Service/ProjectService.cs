@@ -17,15 +17,18 @@ namespace DigitalCap.Infrastructure.Service
         private readonly ITaskRepository _taskRepository;
         private readonly IVesselService _vesselService;
         private readonly ISurveyReportRepository _surveyReportRepository;
+        private readonly IReportPartRepository _reportPartRepository ;
 
         public ProjectService(IProjectRepository projectRepository, ITankRepository tankRepository
-            , ITaskRepository taskRepository, IVesselService vesselService, ISurveyReportRepository surveyReportRepository)
+            , ITaskRepository taskRepository, IVesselService vesselService
+            , ISurveyReportRepository surveyReportRepository, IReportPartRepository reportPartRepository)
         {
             _projectRepository = projectRepository;
             _tankRepository = tankRepository;
             _taskRepository = taskRepository;
             _vesselService = vesselService;
             _surveyReportRepository = surveyReportRepository;
+            _reportPartRepository = reportPartRepository;
         }
 
 
@@ -145,7 +148,7 @@ namespace DigitalCap.Infrastructure.Service
 
             catch (Exception ex)
             { }
-            var templateresult = _reportPartService.CreateProjectReportTemplate((int)model.ShipType, User.Identity.Name, projectId, ImoExists, (ImoExists ? Convert.ToInt32(model.CopyingVesselID) : 0)).Result;
+            var templateresult = _reportPartRepository.CreateProjectReportTemplate((int)model.ShipType, User.Identity.Name, projectId, ImoExists, (ImoExists ? Convert.ToInt32(model.CopyingVesselID) : 0)).Result;
             var gradingresult = _gradingService.PopulateGrading(vesseltype, projectId).Result;
             var result = _descriptionService.CreateProjectImageDescription(projectId, vesseltype).Result;
 
@@ -154,7 +157,7 @@ namespace DigitalCap.Infrastructure.Service
 
         public async Task<byte> UpdateProjectPercentComplete(int projectId)
         {
-            var percentComplete = await _tankRepository.UpdateProjectPercentComplete(projectId);
+            var percentComplete = await _taskRepository.UpdateProjectPercentComplete(projectId);
 
             await _projectRepository.UpdatePercentComplete(projectId, percentComplete);
 

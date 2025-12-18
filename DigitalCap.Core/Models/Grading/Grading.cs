@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace DigitalCap.Core.Models.Grading
+{
+    public class Grading
+    {
+        public Guid SectionId { get; set; }
+        public int TemplateId { get; set; }
+        public string TemplateName { get; set; }
+        public int TanktypeId { get; set; }
+        public string SectionName { get; set; }
+        public int GradingId { get; set; }
+        public string GradingName { get; set; }
+        public string VesselType { get; set; }
+        public string ProjectName { get; set; }
+        public int ProjectId { get; set; }
+        public bool IsActive { get; set; } = true;
+        public bool IsDeleted { get; set; }
+        public bool RequiredInReport { get; set; }
+    }
+}

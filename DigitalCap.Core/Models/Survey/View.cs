@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DigitalCap.Core.Models.Tank;
+using System;
 using System.Collections.Generic;
 using System.Text;
 

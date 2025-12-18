@@ -229,7 +229,6 @@ namespace DigitalCap.Persistence.Repositories
                        transaction: Transaction,
                        commandType: CommandType.StoredProcedure
                   );
-
                 return result.ToList();
 
             }

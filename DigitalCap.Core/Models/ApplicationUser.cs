@@ -16,7 +16,7 @@ namespace DigitalCap.Core.Models
         public string ProviderKey { get; set; }
     }
 
-    public class ApplicationUser : IdentityUser, IUser
-    {
-    }
+    //public class ApplicationUser : IdentityUser, IUser
+    //{
+    //}
 }
