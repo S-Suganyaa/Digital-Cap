@@ -25,9 +25,12 @@ namespace DigitalCap.Persistence.Extensions
 
             // Repositories
             services.AddScoped<IProjectRepository, ProjectRepository>();
+            services.AddScoped<IActivityRepository, ActivityRepository>();
+
 
             // Services
             services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<IActivityService, ActivityService>();
 
             return services;
         }
