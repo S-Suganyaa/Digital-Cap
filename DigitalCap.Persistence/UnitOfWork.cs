@@ -16,6 +16,8 @@ namespace DigitalCap.Persistence
 
         /// <summary>
         /// 
+        /// 
+        /// 
         /// </summary>
         /// <param name="connectionString"></param>
         public UnitOfWork(string connectionString)
