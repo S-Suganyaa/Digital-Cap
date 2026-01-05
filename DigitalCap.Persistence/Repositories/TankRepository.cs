@@ -2,6 +2,7 @@
 using DigitalCap.Core.Enumerations;
 using DigitalCap.Core.Interfaces.Repository;
 using DigitalCap.Core.Models;
+using DigitalCap.Core.Models.ReportConfig;
 using DigitalCap.Core.Models.Tank;
 using DigitalCap.Core.ViewModels;
 using Microsoft.Data.SqlClient;
@@ -16,6 +17,11 @@ namespace DigitalCap.Persistence.Repositories
 {
     public class TankRepository : RepositoryBase<VesselTank, Guid>, ITankRepository
     {
+        private readonly ILogger<TankRepository> _logger;
+        public TankRepository(IUnitOfWork unitOfWork, ILogger<TankRepository> logger) : base(unitOfWork, logger)
+        {
+            _logger = logger;
+        }
 
         public async Task<List<VesselTank>> GetTanks_VesselByIMO(string imonumber)
         {
@@ -26,6 +32,25 @@ namespace DigitalCap.Persistence.Repositories
 
                 return (await Connection.QueryAsync<VesselTank>(
                     sql: "dbo.Get_Vessel_Tank_ByIMONumber",
+                    param: parameters,
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction)).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<VesselTank>> CreateTanks_VesselByProject(string imonumber, int projectId, int newprojectId, string newimo)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@ImoNumber", imonumber);
+
+                return (await Connection.QueryAsync<VesselTank>(
+                    sql: "dbo.CreateTanksofVesselByProject",
                     param: parameters,
                     commandType: CommandType.StoredProcedure,
                     transaction: Transaction)).ToList();
@@ -93,7 +118,7 @@ namespace DigitalCap.Persistence.Repositories
                 var tanks = new List<VesselTank>();
                 if (!string.IsNullOrEmpty(copyingimonumber))
                 {
-                    tanks = copyingProjectId == 0 ? this.GetTanks_VesselByIMO(copyingimonumber).Result : this.CreateTanks_VesselByProject(copyingimonumber, copyingProjectId, projectid, imonumber).Result;
+                    tanks = copyingProjectId == 0 ? GetTanks_VesselByIMO(copyingimonumber).Result : CreateTanks_VesselByProject(copyingimonumber, copyingProjectId, projectid, imonumber).Result;
 
                 }
                 if (!string.IsNullOrEmpty(vesseltype))
@@ -196,11 +221,11 @@ namespace DigitalCap.Persistence.Repositories
             }
         }
 
-        public async Task<List<ShipType>> GetShipType()
+        public async Task<List<Core.Models.Tank.ShipType>> GetShipType()
         {
             try
             {
-                var result = await Connection.QueryAsync<ShipType>(
+                var result = await Connection.QueryAsync<Core.Models.Tank.ShipType>(
                     sql: "dbo.GetShipType",
                     commandType: CommandType.StoredProcedure,
                     transaction: Transaction
@@ -236,6 +261,148 @@ namespace DigitalCap.Persistence.Repositories
             {
                 throw;
             }
-        }       
+        }
+        public async Task<List<VesselTankGrading>> GetVessel_GradingByVesselType(string vesseltype)
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<VesselTankGrading>(
+                       sql: "dbo.Get_Vessel_Tank_Grading_ByVesselType",
+                      param: new
+                      {
+
+                          VesselType = vesseltype
+                      },
+                       commandType: CommandType.StoredProcedure);
+
+                return result.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
+        }
+
+        public async Task<bool> CreateVessel_Grading(VesselTankGrading vesselTankGrading)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+
+                foreach (var prop in typeof(VesselTankGrading).GetProperties())
+                {
+                    if (prop.Name != "Id" &&
+                        prop.Name != "TemplateId" &&
+                        prop.Name != "VesselName")
+                    {
+                        parameters.Add("@" + prop.Name, prop.GetValue(vesselTankGrading));
+                    }
+                }
+
+                await Connection.ExecuteAsync(
+                    sql: "dbo.Create_Vessel_Grading",
+                    param: parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+        public async Task<List<TankUI>> GetTemplateTanks(int templateId, string imonumber, string vesseltype, int projectId)
+        {
+            try
+            {
+
+                var result = await Connection.QueryAsync<TankUI>(
+                    sql: "dbo.GetTempaleTanks",
+                    param: new
+                    {
+                        TemplateId = templateId,
+                        ImoNumber = imonumber,
+                        VesselType = vesseltype,
+                        ProjectId = projectId
+                    },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction);
+
+                return result.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<TankCheckBox>> GetTemplateTankGradingCondition(int Id)
+        {
+            try
+            {
+
+                var result = await Connection.QueryAsync<TankCheckBox>(
+                    sql: "dbo.GetTankGradingConditionById",
+                      new
+                      {
+                          Id = Id
+                      },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction);
+
+                return result.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<TankGradingUI>> GetTemplateTankGrading(int tanktypeId, int projectId, string vesseltype)
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<TankGradingUI>(
+                        sql: "dbo.GetTempaleTankGrading",
+                          new
+                          {
+                              TankTypeId = tanktypeId,
+                              ProjectId = projectId,
+                              VesselType = vesseltype
+                          },
+                        commandType: CommandType.StoredProcedure,
+                        transaction: Transaction);
+
+                return result.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<TankImageCard>> GetProjectTankImageCard(int projectId, int templateId, Guid sectionId)
+        {
+            var result = await Connection.QueryAsync<TankImageCard>(
+                        sql: "dbo.GetTankImageCard",
+                          new
+                          {
+                              ProjectId = projectId,
+                              TemplateId = templateId,
+                              SectionId = sectionId
+                          },
+                        commandType: CommandType.StoredProcedure,
+                        transaction: Transaction);
+
+            return result.ToList();
+
+        }
+
     }
 }
