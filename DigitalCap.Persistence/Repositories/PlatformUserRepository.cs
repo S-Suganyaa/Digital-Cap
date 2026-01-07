@@ -1,6 +1,7 @@
 ﻿using DigitalCap.Core.Enumerations;
 using DigitalCap.Core.Interfaces.Repository;
 using DigitalCap.Core.Models;
+using DigitalCap.WebApi.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -14,7 +15,7 @@ namespace DigitalCap.Persistence.Repositories
     public class PlatformUserRepository :  IPlatformUserRepository
     {
         private readonly IHttpContextAccessor _httpContext;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationDto> _userManager;
         public async Task<string> GetLoggedInUserName()
         {
             ClaimsPrincipal principal = _httpContext.HttpContext.User as ClaimsPrincipal;

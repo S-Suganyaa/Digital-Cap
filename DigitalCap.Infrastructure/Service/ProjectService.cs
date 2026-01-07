@@ -10,6 +10,7 @@ using DigitalCap.Core.Models.Permissions;
 using DigitalCap.Core.Models.Survey;
 using DigitalCap.Core.ViewModels;
 using DigitalCap.Infrastructure.Service;
+using DigitalCap.WebApi.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -451,7 +452,18 @@ namespace DigitalCap.Infrastructure.Service
                         .Failure("User not found");
                 }
 
-                var roles = await _userManager.GetRolesAsync(currentUserResult.Data);
+                var currentUserDto = currentUserResult.Data;
+
+                var identityUser =
+                    await _userManager.FindByNameAsync(currentUserDto.UserName);
+
+                if (identityUser == null)
+                {
+                    return ServiceResult<List<AllProjectsGrid>>
+                        .Failure("Identity user not found");
+                }
+
+                var roles = await _userManager.GetRolesAsync(identityUser);
 
                 bool isAdmin = roles.Contains("Admin (CAP HQ)");
                 bool isContributor = roles.Contains("Contributor (CAP Coordinator)");

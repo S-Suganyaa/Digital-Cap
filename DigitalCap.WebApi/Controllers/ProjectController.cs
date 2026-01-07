@@ -54,7 +54,6 @@ namespace DigitalCap.WebApi.Controllers
         }
 
         [HttpPost("[action]")]
-        [ActionName("Update")]
         public async Task<IActionResult> Update_Project(Project model)
         {
             //if (id != model.ID)
@@ -101,7 +100,7 @@ namespace DigitalCap.WebApi.Controllers
             return Ok(result.Data);
         }
         [HttpPost("[action]")]
-        public async Task<IActionResult> UpdatePriority(int id)
+        public async Task<IActionResult> GetSummary(int id)
         {
             var result = _projectService.GetSummary(id);
 
@@ -209,7 +208,7 @@ namespace DigitalCap.WebApi.Controllers
         }
 
         [HttpGet("[action]")]
-        [PermissionAuthorize(Core.Security.Permission.ViewWorkflowAndTasks)]
+        [PermissionAuthorize(DigitalCap.Core.Security.Permission.ViewWorkflowAndTasks)]
         public async Task<IActionResult> Workflow(int? id)
         {
 
@@ -223,7 +222,8 @@ namespace DigitalCap.WebApi.Controllers
 
 
 
-        [PermissionAuthorize(false, Core.Security.Permission.ViewAbsProjectLandingPage, Core.Security.Permission.ViewClientProjectLandingPage)]
+        // [PermissionAuthorize(false, Core.Security.Permission.ViewAbsProjectLandingPage, Core.Security.Permission.ViewClientProjectLandingPage)]
+        [HttpGet("[action]")]
         public async Task<IActionResult> Landing(int? id)
         {
             if (!id.HasValue)
@@ -239,6 +239,7 @@ namespace DigitalCap.WebApi.Controllers
         }
 
         //  [PermissionAuthorize(false, Permission.ViewClientProjectLandingPage)]
+        [HttpGet("[action]")]
         public async Task<IActionResult> ClientLanding(int? id)
         {
             if (!id.HasValue)
@@ -262,7 +263,6 @@ namespace DigitalCap.WebApi.Controllers
         }
 
 
-        [HttpGet("[action]")]
         // [PermissionAuthorize(false, Permission.ViewRecentActivityAllProjectsAllRegions, Permission.ViewRecentActivityAllProjectsOwnRegion)]
         //public IActionResult RecentActivity()
         //{

@@ -2,10 +2,9 @@
 using DigitalCap.Core.Security;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNetCore.Identity;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
+using System.Linq;
 
 namespace DigitalCap.Core.Models
 {
@@ -18,12 +17,13 @@ namespace DigitalCap.Core.Models
         public string ProviderKey { get; set; }
     }
 
-    public class ApplicationUser : IdentityUser
+    public class ApplicationDto : IUser// : IdentityUser, IUser
     {
-        public static readonly ApplicationUser Anonymous = new ApplicationUser();
+        public static readonly ApplicationDto Anonymous = new ApplicationDto();
         [Required]
         [EmailAddress(ErrorMessage = "The Email field is not a valid e-mail address.")]
-        public override string Email { get; set; }
+        public string Id { get; set; }
+        public string Email { get; set; }
 
         public IReadOnlyList<string> Roles { get; set; }
         public HashSet<Permission> Permissions { get; set; }
@@ -33,6 +33,7 @@ namespace DigitalCap.Core.Models
                                         ? string.Join(", ", Roles)
                                         : null;
         public bool IsEnabled { get; set; }
+        public string UserName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public bool HasAllPermissions(params Permission[] permissions)
         {
@@ -48,5 +49,18 @@ namespace DigitalCap.Core.Models
             return result;
         }
 
+        public bool HasAnyPermissions(params Permission[] permissions)
+        {
+
+            if (!(permissions?.Any() ?? false))
+                return true;
+
+            if (!(Permissions?.Any() ?? false))
+                return false;
+
+            var result = permissions.Any(Permissions.Contains);
+
+            return result;
+        }
     }
 }

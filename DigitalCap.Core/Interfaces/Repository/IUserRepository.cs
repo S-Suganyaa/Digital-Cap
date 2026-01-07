@@ -8,7 +8,7 @@ namespace DigitalCap.Core.Interfaces.Repository
 {
     public interface IUserRepository
     {
-        Task<List<ApplicationUser>> GetAllUsers();
+        Task<List<ApplicationDto>> GetAllUsers();
         Task<string> GetLoggedInUserName();
 
 

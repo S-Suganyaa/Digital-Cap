@@ -4,6 +4,7 @@ using DigitalCap.Core.Helpers.Constants;
 using DigitalCap.Core.Interfaces.Repository;
 using DigitalCap.Core.Models;
 using DigitalCap.Core.Models.Permissions;
+using DigitalCap.WebApi.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
@@ -24,7 +25,7 @@ namespace DigitalCap.Persistence.Repositories
     {
         private readonly ILogger<ProjectRepository> _logger;
         private readonly IHttpContextAccessor _httpContext;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationDto> _userManager;
         public ProjectRepository(IUnitOfWork unitOfWork, ILogger<ProjectRepository> logger) : base(unitOfWork, logger)
         {
             _logger = logger;

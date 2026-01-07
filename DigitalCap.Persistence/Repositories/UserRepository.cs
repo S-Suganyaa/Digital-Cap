@@ -1,6 +1,7 @@
 ﻿using DigitalCap.Core.Enumerations;
 using DigitalCap.Core.Interfaces.Repository;
 using DigitalCap.Core.Models;
+using DigitalCap.WebApi.Core;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -14,7 +15,7 @@ namespace DigitalCap.Persistence.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<Microsoft.AspNetCore.Identity.IdentityRole> _roleManager;
         private readonly IHttpContextAccessor _httpContext;
         private readonly IPlatformUserRepository _platformUserRepository;
 
@@ -26,10 +27,16 @@ namespace DigitalCap.Persistence.Repositories
             
             return er_roles;
         }
-        public async Task<List<ApplicationUser>> GetAllUsers()
+        public async Task<List<ApplicationDto>> GetAllUsers()
         {
-            var data = _userManager.Users.Select(x => new ApplicationUser { Id = x.Id, UserName = x.UserName }).ToList();
-            return data;
+            return _userManager.Users
+                .Select(u => new ApplicationDto
+                {
+                    Id = u.Id,
+                    Email = u.Email,
+                    UserName = u.UserName
+                })
+                .ToList();
         }
 
         public async Task<string> GetLoggedInUserName()

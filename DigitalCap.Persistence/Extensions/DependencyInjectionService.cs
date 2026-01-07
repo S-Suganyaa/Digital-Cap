@@ -3,6 +3,7 @@ using DigitalCap.Core.Interfaces.Service;
 using DigitalCap.Core.Models;
 using DigitalCap.Infrastructure.Service;
 using DigitalCap.Persistence.Repositories;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -31,8 +32,8 @@ namespace DigitalCap.Persistence.Extensions
             services.AddScoped<IDescriptionRepository, DescriptionRepository>();
             services.AddScoped<IFileStorageRepository, FileStorageRepository>();
             services.AddScoped<IFreedomAPIRepository, FreedomAPIRepository>();
-            services.AddScoped<IGradeRepository, IGradeRepository>();
-            services.AddScoped<IGradingRepository, IGradingRepository>();
+            services.AddScoped<IGradeRepository, GradeRepository>();
+            services.AddScoped<IGradingRepository, GradingRepository>();
             services.AddScoped<IPlatformUserRepository, PlatformUserRepository>();
             services.AddScoped<IReportPartRepository, ReportPartRepository>();
             services.AddScoped<ISurveyReportRepository, SurveyReportRepository>();
@@ -45,12 +46,23 @@ namespace DigitalCap.Persistence.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IVesselRepository, VesselRepository>();
 
+            services.AddHttpClient<IHttpService, HttpService>();
             // Services
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<IGradingService, GradingService>();
             services.AddScoped<ISecurityService, SecurityService>();
             services.AddScoped<ISurveyReportService, SurveyReportService>();
             services.AddScoped<IVesselService, VesselService>();
+
+            //services.AddTransient(serviceProvider =>
+            //{
+            //    // Note: Using a lazy here so we no longer require the service provider instance after
+            //    //       the first usage of this Func result. If we allow late usage of the service provider,
+            //    //       it is more likely to be disposed and will throw an exception upon usage.
+            //    var lazyResult = new Lazy<ApplicationUser>(serviceProvider.GetService<ApplicationUser>);
+            //    return new Func<ApplicationUser>(() => lazyResult.Value);
+            //});
+
 
             return services;
         }

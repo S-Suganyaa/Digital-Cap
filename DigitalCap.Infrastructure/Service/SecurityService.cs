@@ -14,13 +14,13 @@ namespace DigitalCap.Infrastructure.Service
 {
     public class SecurityService : ISecurityService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<ApplicationDto> _userManager;
+        private readonly RoleManager<Microsoft.AspNetCore.Identity.IdentityRole> _roleManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserAccountRepository _userAccountRepository;
 
 
-        public async Task<ServiceResult<ApplicationUser>> GetCurrentUser()
+        public async Task<ServiceResult<ApplicationDto>> GetCurrentUser()
         {
             var context = _httpContextAccessor.HttpContext;
             var claimsPrincipal = context?.User;
@@ -30,10 +30,10 @@ namespace DigitalCap.Infrastructure.Service
 
             await MapUserDetails(result);
 
-            return ServiceResult<ApplicationUser>.Success(result); 
+            return ServiceResult<ApplicationDto>.Success(result); 
         }
 
-        private async Task MapUserDetails(ApplicationUser user)
+        private async Task MapUserDetails(ApplicationDto user)
         {
             await MapIsEnabled(user);
             await MapRolesAndClaimsToUser(user);
@@ -41,7 +41,7 @@ namespace DigitalCap.Infrastructure.Service
         }
 
 
-        private async Task MapIsEnabled(ApplicationUser user)
+        private async Task MapIsEnabled(ApplicationDto user)
         {
             if (user == null)
                 return;
@@ -50,7 +50,7 @@ namespace DigitalCap.Infrastructure.Service
             user.IsEnabled = !lockoutEndDate.HasValue;
         }
 
-        private async Task MapUserAccountToUser(ApplicationUser user)
+        private async Task MapUserAccountToUser(ApplicationDto user)
         {
             if (user == null)
                 return;
@@ -58,7 +58,7 @@ namespace DigitalCap.Infrastructure.Service
             user.UserAccount = await _userAccountRepository.GetByAspNetId(user.Id);
         }
 
-        private async Task MapRolesAndClaimsToUser(ApplicationUser user)
+        private async Task MapRolesAndClaimsToUser(ApplicationDto user)
         {
             if (user == null)
                 return;

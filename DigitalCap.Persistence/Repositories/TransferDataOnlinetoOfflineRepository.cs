@@ -2,6 +2,7 @@
 using DigitalCap.Core.Interfaces.Repository;
 using DigitalCap.Core.Models;
 using DigitalCap.Core.Models.Survey;
+using DigitalCap.WebApi.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;

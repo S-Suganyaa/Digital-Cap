@@ -7,6 +7,6 @@ namespace DigitalCap.Core.Interfaces.Service
 {
     public interface ISecurityService
     {
-        Task<ServiceResult<ApplicationUser>> GetCurrentUser();
+        Task<ServiceResult<ApplicationDto>> GetCurrentUser();
     }
 }

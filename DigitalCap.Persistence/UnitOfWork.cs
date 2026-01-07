@@ -1,5 +1,6 @@
 ﻿using DigitalCap.Core.Interfaces.Repository;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,16 +12,14 @@ namespace DigitalCap.Persistence
     {
         private readonly string _connectionString;
         private bool _disposed = false;
+
         public IDbConnection? Connection { get; private set; }
         public IDbTransaction? Transaction { get; private set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="connectionString"></param>
-        public UnitOfWork(string connectionString)
+        public UnitOfWork(IConfiguration configuration)
         {
-            _connectionString = connectionString;
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
+
             Begin();
         }
 
