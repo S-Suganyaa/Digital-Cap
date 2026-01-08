@@ -1,9 +1,11 @@
 ﻿using Dapper;
+using DapperExtensions;
 using DigitalCap.Core.Helpers.Constants;
 using DigitalCap.Core.Interfaces.Repository;
 using DigitalCap.Core.Models;
 using DigitalCap.Core.Models.Tank;
 using DigitalCap.Core.ViewModels;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -37,6 +39,34 @@ namespace DigitalCap.Persistence.Repositories
                 commandType: CommandType.StoredProcedure);
 
             return result;
+        }
+
+        public async Task<List<TaskStatusGroup>> GetStatusGroups(string category)
+        {
+            var sql = @"
+        SELECT *
+        FROM TaskStatusGroup
+        WHERE Category = @Category
+        ORDER BY Id
+    ";
+
+            var result = await Connection.QueryAsync<TaskStatusGroup>(
+                sql,
+                new { Category = category },
+                transaction: Transaction
+            );
+
+            return result.ToList();
+        }
+        public async Task<IEnumerable<SingleTask>> GetTasks(int projectId)
+        {
+            var result = await Connection.QueryAsync<SingleTask>(
+     sql: "CAP.Read_Tasks_ByProjectId",
+     new { ID = projectId },
+     commandType: CommandType.StoredProcedure);
+
+            return result;
+
         }
 
     }

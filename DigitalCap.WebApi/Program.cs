@@ -1,9 +1,13 @@
+using DigitalCap.Core.Models;
+using DigitalCap.Infrastructure.DbContext;
 using DigitalCap.Persistence.Extensions;
-using DigitalCap.Infrastructure.Service;
-using DigitalCap.Core.Interfaces.Service;
+using DigitalCap.WebApi.Core;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.SqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var configuration = builder.Configuration;
 
 
 
@@ -17,6 +21,13 @@ builder.Services.AddPersistenceServices(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
+//                .AddEntityFrameworkStores</*ApplicationDbContext*/>()
+//                .AddDefaultTokenProviders();
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
+                 .AddEntityFrameworkStores<ApplicationDbContext>()
+                 .AddDefaultTokenProviders();
 var app = builder.Build();
 
 

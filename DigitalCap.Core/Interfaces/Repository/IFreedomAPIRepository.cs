@@ -8,5 +8,7 @@ namespace DigitalCap.Core.Interfaces.Repository
     public interface IFreedomAPIRepository
     {
         Task<Vessel> GetVessel(string classNumber);
+        Task<IEnumerable<VesselSurvey>> GetSurveys(string classNum);
+        Task<IEnumerable<Certificate>> GetCertificates(string classNum);
     }
 }
