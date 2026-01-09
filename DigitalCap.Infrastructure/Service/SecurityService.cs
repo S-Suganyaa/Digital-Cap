@@ -60,9 +60,17 @@ namespace DigitalCAP.Core.Services
             return users.Where(x => x.UserAccount?.ClientId == clientId);
         }
 
-        
+        public async Task<IEnumerable<string>> GetPermissionsForUserAsync(Guid userId)
+        {
+            var permissions = await _userAccountRepository
+            .GetUserPermissionsAsync(userId);
+
+            return permissions ?? Enumerable.Empty<string>();
+        }
+
+
         // USER MAPPING HELPERS
-        
+
         private async Task<ApplicationUser?> MapUserDetailsAsync(ApplicationUser? user)
         {
             if (user == null)
@@ -140,13 +148,30 @@ namespace DigitalCAP.Core.Services
             return (await _userManager.AddClaimsAsync(user, newClaims)).Succeeded;
         }
 
-        public async Task<bool> ToggleUserIsEnabledAsync(Guid id, bool isEnabled)
+        public async Task<bool> ToggleUserIsEnabledAsync(string userId, bool isEnabled)
         {
-            var user = await _userManager.FindByIdAsync(id.ToString());
-            if (user == null) return false;
+            if (string.IsNullOrWhiteSpace(userId))
+                return false;
 
-            var lockDate = isEnabled ? null : DateTimeOffset.MaxValue;
-            return (await _userManager.SetLockoutEndDateAsync(user, lockDate)).Succeeded;
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return false;
+
+            var lockoutEnd = isEnabled? (DateTimeOffset?)null: DateTimeOffset.MaxValue;
+
+            var result = await _userManager.SetLockoutEndDateAsync(user, lockoutEnd);
+            return result.Succeeded;
         }
+
+
+
+        //public async Task<bool> ToggleUserIsEnabledAsync(Guid id, bool isEnabled)
+        //{
+        //    var user = await _userManager.FindByIdAsync(id.ToString());
+        //    if (user == null) return false;
+
+        //    var lockDate = isEnabled ? null : DateTimeOffset.MaxValue;
+        //    return (await _userManager.SetLockoutEndDateAsync(user, lockDate)).Succeeded;
+        //}
     }
 }

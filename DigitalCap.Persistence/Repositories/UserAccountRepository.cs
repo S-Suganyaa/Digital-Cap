@@ -2,187 +2,114 @@
 using DigitalCap.Core.Interfaces.Repository;
 using DigitalCap.Core.Models;
 using DigitalCap.Core.Security;
+using DigitalCap.Core.Helpers.Constants;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using System.Transactions;
 
 namespace DigitalCap.Persistence.Repositories
 {
-    public class UserAccountRepository : RepositoryBase, IUserAccountRepository
+    public class UserAccountRepository
+        : RepositoryBase<UserAccountModel, Guid>, IUserAccountRepository
     {
-        public UserAccountRepository(IDbConnection connection, IDbTransaction transaction)
-            : base(connection, transaction) { }
+        private new readonly ILogger<UserAccountRepository> _logger;
 
-        // -------------------- Queries --------------------
-
-        public async Task<UserAccountModel> GetByAspNetIdAsync(string aspNetUserId)
+        public UserAccountRepository(
+            IUnitOfWork unitOfWork,
+            ILogger<UserAccountRepository> logger)
+            : base(unitOfWork, logger)
         {
-            try
-            {
-                var parameters = new DynamicParameters();
-                parameters.Add("@id", aspNetUserId);
-
-                return await Connection.QuerySingleOrDefaultAsync<UserAccountModel>(
-                    sql: Constants.StoredProcedures.UserAccounts.GetByAspNetId,
-                    param: parameters,
-                    commandType: CommandType.StoredProcedure,
-                    transaction: Transaction);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            _logger = logger;
         }
 
-        public async Task<UserAccountModel> GetByAspNetIdIncludingDeletedAsync(string aspNetUserId)
+        public async Task<UserAccountModel?> GetByAspNetIdAsync(string aspNetUserId)
         {
-            try
-            {
-                var parameters = new DynamicParameters();
-                parameters.Add("@id", aspNetUserId);
-
-                return await Connection.QuerySingleOrDefaultAsync<UserAccountModel>(
-                    sql: Constants.StoredProcedures.UserAccounts.GetByAspNetId_ActiveOrDeleted,
-                    param: parameters,
-                    commandType: CommandType.StoredProcedure,
-                    transaction: Transaction);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await Connection.QuerySingleOrDefaultAsync<UserAccountModel>(
+                sql: "sp_UserAccounts_GetByAspNetId",
+                param: new { aspNetUserId },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction);
         }
 
-        public async Task<List<UserAccountModel>> GetUsersInRoleAsync(string roleName)
+        public async Task<IEnumerable<UserAccountModel>> GetByAspNetIdActiveOrDeletedAsync(string aspNetUserId)
         {
-            try
-            {
-                var parameters = new DynamicParameters();
-                parameters.Add("@roleName", roleName);
-
-                return (await Connection.QueryAsync<UserAccountModel>(
-                    sql: Constants.StoredProcedures.UserAccounts.GetUsersInRole,
-                    param: parameters,
-                    commandType: CommandType.StoredProcedure,
-                    transaction: Transaction)).ToList();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await Connection.QueryAsync<UserAccountModel>(
+                sql: "sp_UserAccounts_GetByAspNetId_ActiveOrDeleted",
+                param: new { aspNetUserId },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction);
         }
 
-        public async Task<List<UserAccountModel>> GetUsersInRoleForClientAsync(string roleName, Guid clientId)
+        public async Task<UserAccountModel?> GetByAspNetIdIncludingDeletedAsync(string id)
         {
-            try
-            {
-                var parameters = new DynamicParameters();
-                parameters.Add("@roleName", roleName);
-                parameters.Add("@clientId", clientId);
+            return await Connection.QuerySingleOrDefaultAsync<UserAccountModel>(
+                sql: "sp_UserAccounts_GetByAspNetId_ActiveOrDeleted",
+                param: new { id },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction);
+        }
 
-                return (await Connection.QueryAsync<UserAccountModel>(
-                    sql: Constants.StoredProcedures.UserAccounts.GetUsersInRoleForClient,
-                    param: parameters,
-                    commandType: CommandType.StoredProcedure,
-                    transaction: Transaction)).ToList();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+
+        public async Task<IEnumerable<UserAccountModel>> GetUsersInRoleAsync(string roleName)
+        {
+            return await Connection.QueryAsync<UserAccountModel>(
+                sql: "sp_UserAccounts_GetUsersInRole",
+                param: new { roleName },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction);
+        }
+
+        public async Task<IEnumerable<UserAccountModel>> GetUsersInRoleForClientAsync(
+            string roleName, Guid clientId)
+        {
+            return await Connection.QueryAsync<UserAccountModel>(
+                sql: "sp_UserAccounts_GetUsersInRoleForClient",
+                param: new { roleName, clientId },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction);
+        }
+
+        public async Task<IEnumerable<CapUser>> GetAbsUsersAsync()
+        {
+            return await Connection.QueryAsync<CapUser>(
+                sql: "sp_UserAccounts_GetAbsUsers",
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction);
+        }
+
+        public async Task<IEnumerable<CapUser>> GetClientUsersAsync(string clientId)
+        {
+            return await Connection.QueryAsync<CapUser>(
+                sql: "sp_UserAccounts_GetClientUsers",
+                param: new { clientId },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction);
         }
 
         public async Task<IEnumerable<UserAccountModel>> GetUsersWithPermissionAsync(Permission permission)
         {
-            try
-            {
-                var parameters = new DynamicParameters();
-                parameters.Add("@permissionName", permission.ToString());
-
-                return (await Connection.QueryAsync<UserAccountModel>(
-                    sql: Constants.StoredProcedures.UserAccounts.GetUsersWithPermission,
-                    param: parameters,
-                    commandType: CommandType.StoredProcedure,
-                    transaction: Transaction)).ToList();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return await Connection.QueryAsync<UserAccountModel>(
+                sql: "sp_UserAccounts_GetUsersWithPermission",
+                param: new { permissionName = permission.ToString() },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction);
         }
 
-        public async Task<List<CapUser>> GetAbsUsersAsync()
+
+
+        public async Task<IEnumerable<string>> GetPermissionsForUserAsync(Guid userId)
         {
-            try
-            {
-                return (await Connection.QueryAsync<CapUser>(
-                    sql: Constants.StoredProcedures.UserAccounts.GetAbsUsers,
-                    commandType: CommandType.StoredProcedure,
-                    transaction: Transaction)).ToList();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            var result = await Connection.QueryAsync<string>(
+            sql: "sp_UserAccounts_GetUsersWithPermission",
+            commandType: CommandType.StoredProcedure,
+            param: new { userId },
+            transaction: Transaction);
+
+            return result;
         }
 
-        public async Task<List<CapUser>> GetClientUsersAsync(string clientId)
-        {
-            try
-            {
-                var parameters = new DynamicParameters();
-                parameters.Add("@clientId", clientId);
-
-                return (await Connection.QueryAsync<CapUser>(
-                    sql: Constants.StoredProcedures.UserAccounts.GetClientUsers,
-                    param: parameters,
-                    commandType: CommandType.StoredProcedure,
-                    transaction: Transaction)).ToList();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        // -------------------- Commands --------------------
-
-        public async Task<bool> InsertAsync(UserAccountModel entity)
-        {
-            try
-            {
-                await Connection.ExecuteAsync(
-                    sql: Constants.StoredProcedures.UserAccounts.Insert,
-                    param: entity,
-                    commandType: CommandType.StoredProcedure,
-                    transaction: Transaction);
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public async Task<bool> UpdateAsync(UserAccountModel entity)
-        {
-            try
-            {
-                await Connection.ExecuteAsync(
-                    sql: Constants.StoredProcedures.UserAccounts.Update,
-                    param: entity,
-                    commandType: CommandType.StoredProcedure,
-                    transaction: Transaction);
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
     }
 }
+

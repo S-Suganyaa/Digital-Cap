@@ -13,7 +13,7 @@ namespace DigitalCap.Core.Interfaces.Service
         Task<IEnumerable<ApplicationUser>> GetAllUsersAsync();
         Task<IEnumerable<ApplicationUser>> GetClientUsersAsync();
         Task<IEnumerable<Permission>> GetPermissionsForRoleAsync(string role);
-        Task<bool> UpdateRolesForUserAsync(Guid userId, params string[] roles);
+        Task<bool> UpdateRolesForUserAsync(Guid userId, IEnumerable<string> roles1, params string[] roles);
         Task<bool> UpdatePermissionsForUserAsync(Guid userId, params Permission[] permissions);
         Task<bool> ToggleUserIsEnabledAsync(Guid id, bool isEnabled);
     }

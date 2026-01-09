@@ -7,7 +7,7 @@ namespace DigitalCap.Core.ViewModels.AccountViewModels
 {
     public class ResetPasswordViewModel
     {
-        {
+        
         [Required]
         [EmailAddress]
         public string Email { get; set; }
@@ -22,4 +22,4 @@ namespace DigitalCap.Core.ViewModels.AccountViewModels
         public string Code { get; set; }
     }
 }
-}
+

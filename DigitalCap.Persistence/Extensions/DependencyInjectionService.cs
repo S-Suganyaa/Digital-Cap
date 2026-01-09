@@ -2,6 +2,7 @@
 using DigitalCap.Core.Interfaces.Service;
 using DigitalCap.Infrastructure.Service;
 using DigitalCap.Persistence.Repositories;
+using DigitalCAP.Core.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -26,10 +27,18 @@ namespace DigitalCap.Persistence.Extensions
             // Repositories
             services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<IUserAccountRepository, UserAccountRepository>();
+            services.AddScoped<IEmailRepository, EmailRepository>();
+            services.AddScoped<IPlatformUserRepository, PlatformUserRepository>();
+
+            //services.AddScoped<ISecurityClientRepository, SecurityClientRepository>();
 
             // Services
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<IUserAccountService, UserAccountService>();
+            services.AddScoped<ISecurityService, SecurityService>();
+            services.AddScoped<ISecurityClientService, SecurityClientService>();
+            services.AddScoped<IPlatformUserService, PlatformUserService>();
+            services.AddScoped<IEmailService, EmailService>();
 
             return services;
         }

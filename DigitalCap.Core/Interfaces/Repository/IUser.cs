@@ -9,13 +9,13 @@ namespace DigitalCap.Core.Interfaces.Repository
 {
     public interface IUser
     {
-        string UserName { get; set; }
-        string Email { get; set; }
-        bool IsEnabled { get; set; }
-        IReadOnlyList<string> Roles { get; set; }
-        HashSet<Permission> Permissions { get; set; }
+        string UserName { get; }
+        string Email { get; }
+        bool IsEnabled { get; }
+        IReadOnlyCollection<string> Roles { get; }
+        IReadOnlyCollection<Permission> Permissions { get; }
         bool HasAllPermissions(params Permission[] permissions);
         bool HasAnyPermissions(params Permission[] permissions);
-        UserAccountModel UserAccount { get; set; }
+        UserAccountModel? UserAccount { get; }
     }
 }

@@ -104,6 +104,7 @@ namespace DigitalCap.Core.Helpers.Constants
         public static readonly string GetReportIsAuthorized = "er.sp_GET_REPORT_IS_AUTHORIZED";
         public static readonly string SelectSampleVoyages = "er.sp_SELECT_SAMPLE_VOYAGES";
         public static readonly string AddEditAISVoyageCalculation = "er.sp_ADDEDIT_AIS_VOYAGE_CALC";
+        //public static readonly string GetByAspNetId_ActiveOrDeleted = "GetByAspNetId_ActiveOrDeleted";
 
 
         // Corrosion Detection
@@ -167,6 +168,9 @@ namespace DigitalCap.Core.Helpers.Constants
 
         // Configuration
         public const string VisibleTileConfigurationSectionName = "VisibleTiles";
+
+        public static object StoredProcedures { get; set; }
+        public static object Roles { get; set; }
     }
     /// <summary>
     /// The column names in the database
@@ -245,6 +249,21 @@ namespace DigitalCap.Core.Helpers.Constants
         public static string LastModifiedDate = "LastModifiedDate";
         public static string LastModifiedBy = "LastModifiedBy";
     }
+
+    public static class StoredProcedures
+    {
+        public static class UserAccounts
+        {
+            public static readonly string GetByAspNetId = "sp_UserAccounts_GetByAspNetId";
+            public static readonly string GetByAspNetId_ActiveOrDeleted = "sp_UserAccounts_GetByAspNetId_ActiveOrDeleted";
+            public static readonly string GetUsersInRole = "sp_UserAccounts_GetUsersInRole";
+            public static readonly string GetUsersWithPermission = "sp_UserAccounts_GetUsersWithPermission";
+            public static readonly string GetUsersInRoleForClient = "sp_UserAccounts_GetUsersInRoleForClient";
+            public static readonly string GetAbsUsers = "sp_UserAccounts_GetAbsUsers";
+            public static readonly string GetClientUsers = "sp_UserAccounts_GetClientUsers";
+        }
+    }
+
     public static class TableNames
     {
         public static string Vessel = "core.Vessel";
