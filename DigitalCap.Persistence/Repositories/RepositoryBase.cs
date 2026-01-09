@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using DapperExtensions;
 using DigitalCap.Core.Helpers;
 using DigitalCap.Core.Interfaces.Repository;
 using DigitalCap.Core.Models;
@@ -248,5 +249,69 @@ namespace DigitalCap.Persistence.Repositories
             return result.AsQueryable();
         }
 
+        public Task<TKey> InsertAsync(TEntity entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TKey Insert(TEntity entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void InsertMany(IEnumerable<TEntity> entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int BulkInsert(IEnumerable<TEntity> entities)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> UpdateAsync(TEntity entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Update(TEntity entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateMany(List<TEntity> entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteAsync(TKey id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Delete(TKey id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteFiltered(Expression<Func<TEntity, bool>> filter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<string>> GetClassNumbers()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveCacheKeysByValue(string[] keyValue, string uniqueId, string contextInfo = "")
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> UpdateQueryExecutionAsync(TEntity entity)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

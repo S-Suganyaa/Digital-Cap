@@ -1,7 +1,6 @@
 ﻿using DigitalCap.Core.Models.ExportConfig;
 using DigitalCap.Core.Models.Survey;
 using DigitalCap.Core.Models.Tank;
-using DigitalCap.Core.Models.VesselModel;
 using DigitalCap.Core.ViewModels;
 using System;
 using System.Collections.Generic;

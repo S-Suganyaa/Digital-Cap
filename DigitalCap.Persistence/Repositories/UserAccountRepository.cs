@@ -7,19 +7,15 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Threading.Tasks;
+using System.Text;
+using System.Transactions;
 
 namespace DigitalCap.Persistence.Repositories
 {
-    public class UserAccountRepository
-        : RepositoryBase<UserAccountModel, Guid>, IUserAccountRepository
+    public class UserAccountRepository :RepositoryBase<UserAccountModel, Guid>, IUserAccountRepository
     {
-        private new readonly ILogger<UserAccountRepository> _logger;
-
-        public UserAccountRepository(
-            IUnitOfWork unitOfWork,
-            ILogger<UserAccountRepository> logger)
-            : base(unitOfWork, logger)
+        public UserAccountRepository(IUnitOfWork unitOfWork)
+       : base(unitOfWork)
         {
             _logger = logger;
         }
@@ -109,7 +105,16 @@ namespace DigitalCap.Persistence.Repositories
 
         //    return result;
         //}
+        public async Task<UserAccountModel> GetByAspNetId(string id)
+        {
+            var result = await Connection.QuerySingleOrDefaultAsync<UserAccountModel>(
+                sql: "sp_UserAccounts_GetByAspNetId",
+                commandType: CommandType.StoredProcedure,
+                param: new { id },
+                transaction: Transaction);
 
+            return result;
+        }
     }
 }
 

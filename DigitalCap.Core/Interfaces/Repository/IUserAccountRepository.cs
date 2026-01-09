@@ -2,13 +2,14 @@
 using DigitalCap.Core.Security;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DigitalCap.Core.Interfaces.Repository
 {
-    public interface IUserAccountRepository
-        : IRepositoryBase<UserAccountModel, Guid>
+    public interface IUserAccountRepository : IRepositoryBase<UserAccountModel, Guid>
     {
+        Task<UserAccountModel> GetByAspNetId(string id);
         // Single user lookups
         //Task<UserAccountModel> GetByAspNetIdAsync(string aspNetUserId);
         //Task<IEnumerable<UserAccountModel>> GetByAspNetIdActiveOrDeletedAsync(string aspNetUserId);

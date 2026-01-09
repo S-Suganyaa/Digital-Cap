@@ -18,7 +18,7 @@ namespace DigitalCap.Infrastructure.Service
             _gradingRepository = gradingRepository;
             _tankRepository = tankRepository;
         }
-        public async Task<ServiceResult<bool>> PopulateGradingAsync(string vesselType, int projectId)
+        public async Task<ServiceResult<bool>> PopulateGrading(string vesselType, int projectId)
         {
             try
             {
@@ -26,18 +26,18 @@ namespace DigitalCap.Infrastructure.Service
                 await _gradingRepository.CreateProjectSectionGrading(projectId, vesselType);
 
                 // 2. Get tank grading template
-                //var tankGradings =
-                //    await _tankRepository.GetVesselGradingByVesselType(vesselType);
+                var tankGradings =
+                    await _tankRepository.GetVessel_GradingByVesselType(vesselType);
 
                 // 3. Populate grading
-                //foreach (var grading in tankGradings)
-                //{
-                //    grading.ProjectId = projectId;
-                //    grading.CreatedDttm = DateTime.Now;
-                //    grading.UpdateDttm = DateTime.Now;
+                foreach (var grading in tankGradings)
+                {
+                    grading.ProjectId = projectId;
+                    grading.CreatedDttm = DateTime.Now;
+                    grading.UpdateDttm = DateTime.Now;
 
-                //    await _gradingRepository.CreateVesselGradingAsync(grading);
-                //}
+                    await _gradingRepository.CreateVessel_Grading(grading);
+                }
 
                 return ServiceResult<bool>.Success(true);
             }
