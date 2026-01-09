@@ -7,7 +7,7 @@ namespace DigitalCap.Core.Interfaces.Service
 {
     public interface ISecurityClientService
     {
-        Task<bool> ClientNameExistsAsync(string clientName);
+        //Task<bool> ClientNameExistsAsync(string clientName);
 
         Task<IReadOnlyList<ClientModel>> GetAllClientsAsync();
 

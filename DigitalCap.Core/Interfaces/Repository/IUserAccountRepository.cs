@@ -10,27 +10,27 @@ namespace DigitalCap.Core.Interfaces.Repository
         : IRepositoryBase<UserAccountModel, Guid>
     {
         // Single user lookups
-        Task<UserAccountModel> GetByAspNetIdAsync(string aspNetUserId);
-        Task<IEnumerable<UserAccountModel>> GetByAspNetIdActiveOrDeletedAsync(string aspNetUserId);
+        //Task<UserAccountModel> GetByAspNetIdAsync(string aspNetUserId);
+        //Task<IEnumerable<UserAccountModel>> GetByAspNetIdActiveOrDeletedAsync(string aspNetUserId);
 
-        Task<UserAccountModel> GetByAspNetIdIncludingDeletedAsync(string id);
+        //Task<UserAccountModel> GetByAspNetIdIncludingDeletedAsync(string id);
 
         
 
-        // Role-based queries
-        Task<IEnumerable<UserAccountModel>> GetUsersInRoleAsync(string roleName);
+        //// Role-based queries
+        //Task<IEnumerable<UserAccountModel>> GetUsersInRoleAsync(string roleName);
 
-        Task<IEnumerable<UserAccountModel>> GetUsersInRoleForClientAsync(string roleName,Guid clientId);
+        //Task<IEnumerable<UserAccountModel>> GetUsersInRoleForClientAsync(string roleName,Guid clientId);
 
-        // Permission-based queries
-        Task<IEnumerable<UserAccountModel>> GetUsersWithPermissionAsync(Permission permission);
+        //// Permission-based queries
+        //Task<IEnumerable<UserAccountModel>> GetUsersWithPermissionAsync(Permission permission);
 
-        Task<IEnumerable<string>> GetPermissionsForUserAsync(Guid userId);
+        //Task<IEnumerable<string>> GetPermissionsForUserAsync(Guid userId);
 
-        // ABS / Client users
-        Task<IEnumerable<CapUser>> GetAbsUsersAsync();
+        //// ABS / Client users
+        //Task<IEnumerable<CapUser>> GetAbsUsersAsync();
 
-        Task<IEnumerable<CapUser>> GetClientUsersAsync(string clientId);
+        //Task<IEnumerable<CapUser>> GetClientUsersAsync(string clientId);
     }
 }
 

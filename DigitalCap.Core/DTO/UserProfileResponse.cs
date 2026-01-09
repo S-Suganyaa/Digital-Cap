@@ -7,8 +7,8 @@ namespace DigitalCap.Core.DTO
 {
     public class UserProfileResponse
     {
-        public required ApplicationUser User { get; set; }
+        //public required ApplicationUser User { get; set; }
         public required UserAccountModel Account { get; set; }
     }
-`   
+   
 }

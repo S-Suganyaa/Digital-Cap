@@ -21,11 +21,11 @@ namespace DigitalCap.Infrastructure.Service
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool> ClientNameExistsAsync(string clientName)
-        {
-            return await _securityClientRepository.ClientNameExistsAsync(
-                new ClientModel { Name = clientName });
-        }
+        //public async Task<bool> ClientNameExistsAsync(string clientName)
+        //{
+        //    return await _securityClientRepository.ClientNameExistsAsync(
+        //        new ClientModel { Name = clientName });
+        //}
 
         public async Task<IReadOnlyList<ClientModel>> GetAllClientsAsync()
         {
@@ -35,8 +35,8 @@ namespace DigitalCap.Infrastructure.Service
 
         public async Task<ClientModel> CreateClientAsync(ClientModel model)
         {
-            if (await ClientNameExistsAsync(model.Name))
-                throw new InvalidOperationException("Client name already exists");
+            //if (await ClientNameExistsAsync(model.Name))
+            //    throw new InvalidOperationException("Client name already exists");
 
             _securityClientRepository.Insert(model);
 

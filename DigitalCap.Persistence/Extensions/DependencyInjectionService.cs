@@ -35,7 +35,7 @@ namespace DigitalCap.Persistence.Extensions
             // Services
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<IUserAccountService, UserAccountService>();
-            services.AddScoped<ISecurityService, SecurityService>();
+            //services.AddScoped<ISecurityService, SecurityService>();
             services.AddScoped<ISecurityClientService, SecurityClientService>();
             services.AddScoped<IPlatformUserService, PlatformUserService>();
             services.AddScoped<IEmailService, EmailService>();

@@ -7,7 +7,7 @@ namespace DigitalCap.Core.DTO
 {
     public class EditProfileRequest
     {
-        public ApplicationUser AspNetUser { get; set; }
+        //public ApplicationUser AspNetUser { get; set; }
         public UserAccountModel UserAccount { get; set; }
     }
 

@@ -9,8 +9,8 @@ namespace DigitalCap.Core.Interfaces.Repository
         : IRepositoryBase<ClientModel, Guid>
     {
 
-        Task<bool> ClientNameExistsAsync(string clientName);
-        Task<bool> ClientNameExistsAsync(ClientModel clientModel);
+        //Task<bool> ClientNameExistsAsync(string clientName);
+        //Task<bool> ClientNameExistsAsync(ClientModel clientModel);
         Task<IReadOnlyList<ClientModel>> GetAllClientsAsync();
         
 
