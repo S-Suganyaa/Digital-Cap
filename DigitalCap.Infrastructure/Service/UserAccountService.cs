@@ -5,7 +5,6 @@ using DigitalCap.Core.Interfaces.Service;
 using DigitalCap.Core.Models;
 using DigitalCap.Core.Security;
 using DigitalCap.Core.Security.Extensions;
-using DigitalCap.Core.ViewModels.AccountViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
