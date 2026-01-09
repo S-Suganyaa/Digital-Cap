@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DigitalCap.Core.Security;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
@@ -33,3 +34,7 @@ namespace DigitalCap.Core.Security.Extensions
         }
     }
 }
+
+
+    
+
