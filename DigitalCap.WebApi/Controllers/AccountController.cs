@@ -1,7 +1,6 @@
 ﻿using DigitalCap.Core.DTO;
 using DigitalCap.Core.Interfaces.Service;
 using DigitalCap.Core.Models;
-using DigitalCap.Core.ViewModels.AccountViewModels;
 using DigitalCap.Infrastructure.Service;
 using Microsoft.AspNetCore.Mvc;
 

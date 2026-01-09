@@ -22,9 +22,9 @@ namespace DigitalCap.Core.Security
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            _user.Email = _user.UserName = context.HttpContext.User.Identity.Name;
-            var distinctPermissions = context.HttpContext.User.Claims.ToPermissions();
-            _user.Permissions = new HashSet<Permission>(distinctPermissions);
+            //_user.Email = _user.UserName = context.HttpContext.User.Identity.Name;
+            //var distinctPermissions = context.HttpContext.User.Claims.ToPermissions();
+            //_user.Permissions = new HashSet<Permission>(distinctPermissions);
 
             if (_user.Permissions.Contains(Permission.SystemAdministrator))
             {
