@@ -573,6 +573,8 @@ namespace DigitalCap.Infrastructure.Service
             var reportdeatils = new ReportDetailsViewModel(projectGrading);
             reportdeatils.ReportEdit = Convert.ToBoolean(reportEdit?.Edit) || Convert.ToBoolean(reportEdit?.Read) || Convert.ToBoolean(reportEdit?.Delete);
             var isSync = await _transferDataOnlinetoOfflineRepository.GetDownloadOfflineProjects(id.Value);
+            
+
             if (isSync != null)
             {
                 var username = currentuser;

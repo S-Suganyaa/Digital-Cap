@@ -7,11 +7,13 @@ using DigitalCap.Core.Models.VesselModel;
 using DigitalCap.Core.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Transactions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace DigitalCap.Persistence.Repositories
 {
@@ -430,7 +432,6 @@ namespace DigitalCap.Persistence.Repositories
          );
             return result.ToList();
         }
-        //dbo.
 
         public async Task<List<ProjectCardMapping>> GetProjectImageCard(int projectId, int templateId, Guid sectionId)
         {
@@ -444,7 +445,7 @@ namespace DigitalCap.Persistence.Repositories
                  SectionId = sectionId
 
              },
-   commandType: CommandType.StoredProcedure,
+             commandType: CommandType.StoredProcedure,
              transaction: Transaction
          );
             return result.ToList();
@@ -486,6 +487,185 @@ namespace DigitalCap.Persistence.Repositories
             );
 
             return result.ToList();
+        }
+        public async Task<bool> CreateProjectTemplate(ProjectReportMapping model)
+        {
+            try
+            {
+                var result = await Connection.ExecuteAsync(
+         sql: "dbo.CreateProjectTemplate",
+         param: new
+         {
+             model.ProjectId,
+             model.TemplateId,
+             model.SectionId,
+             model.CreatedDttm
+         },
+         commandType: CommandType.StoredProcedure,
+         transaction: Transaction
+       );
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+        }
+        public async Task<bool> DeleteProjectTemplate(int projectId, int templateId)
+        {
+            try
+            {
+
+                var result = await Connection.ExecuteAsync(
+                           sql: "dbo.DeleteProjectTemplate",
+                           param: new
+                           {
+                               ProjectId = projectId,
+                               TemplateId = templateId
+                           },
+                           commandType: CommandType.StoredProcedure,
+                           transaction: Transaction
+                         );
+
+                return true;
+
+            }
+            catch (SqlException sqlEx)
+            {
+                //throw sqlEx;
+            }
+            return false;
+
+        }
+        public async Task InsertBulkUploadImage(int imageId)
+        {
+            await Connection.ExecuteAsync(
+                sql: "dbo.InsertBulkUploadImage",
+                param: new { ImageId = imageId },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+        }
+        public async Task<int> DeleteBulkUploadImage(int imageId)
+        {
+            return await Connection.ExecuteAsync(
+                sql: "dbo.DeleteBulkUploadImage",
+                param: new { ImageId = imageId },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+        }
+        public async Task<bool> AddEditImageNew(int imgId, string imageBase64)
+        {
+            var result = await Connection.ExecuteScalarAsync<int>(
+                sql: "[upskill].[sp_AddEdit_Image_New]",
+                param: new
+                {
+                    Id = -1,
+                    ImageId = imgId,
+                    Base64String = imageBase64
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return result > 0;
+        }
+        public async Task<List<string>> GetUnplacedImages(int projectId, string assignmentId)
+        {
+
+            var result = await Connection.QueryAsync<string>(
+            sql: "CAP.Read_Survey_Report_Unplaced_Images",
+                new
+                {
+                    ProjectId = projectId,
+                    AssignmentId = assignmentId
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction);
+
+            return result.ToList();
+
+        }
+
+        public async Task<string> GetImage(string fileId)
+        {
+            var result = await Connection.QueryAsync<string>(
+                  sql: "[upskill].[sp_Get_Image]",
+                  new
+                  {
+                      FileId = fileId
+                  },
+                  commandType: CommandType.StoredProcedure,
+                  transaction: Transaction);
+
+            return result.FirstOrDefault();
+        }
+
+        public async Task<List<AssignmentsDropdownModel>> GetReportFromAssignments(string assignmentIds)
+        {
+            var result = await Connection.QueryAsync<AssignmentsDropdownModel>(
+                sql: "dbo.GetReportsFromApplicationIds",
+                param: new { AssignmentIds = assignmentIds },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return result.ToList();
+        }
+        public async Task<bool> DeleteImage(string assignmentId, string fileId)
+        {
+            assignmentId ??= "Unknown";
+
+            var affectedRows = await Connection.ExecuteAsync(
+                sql: "[upskill].[sp_Delete_Image]",
+                param: new
+                {
+                    AssignmentId = assignmentId,
+                    FileId = fileId
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return affectedRows > 0;
+        }
+        public async Task<bool> DeleteCard(int projectId, string cardId, string sequenceId, string assignmentId, string appId)
+        {
+            var result = await Connection.ExecuteScalarAsync<int>(
+                sql: "[upskill].[sp_Delete_Card]",
+                param: new
+                {
+                    ProjectId = projectId,
+                    CardId = cardId,
+                    SequenceId = sequenceId,
+                    AssignmentId = assignmentId,
+                    AppId = appId
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return result == 1;
+        }
+        public async Task<int> UploadImage(string assignmentId, string fileId)
+        {
+            assignmentId ??= "Unknown";
+
+            var result = await Connection.ExecuteScalarAsync<int>(
+                sql: "[upskill].[sp_AddEdit_Image]",
+                param: new
+                {
+                    AssignmentId = assignmentId,
+                    FileId = fileId
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return result;
         }
 
     }

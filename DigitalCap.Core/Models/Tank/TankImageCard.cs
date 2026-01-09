@@ -23,15 +23,18 @@ namespace DigitalCap.Core.Models.Tank
         public bool IsSync { get; set; }
     }
 
-    class TankCardComparer : IEqualityComparer<TankImageCard>
+    public class TankCardComparer : IEqualityComparer<TankImageCard>
     {
         public bool Equals(TankImageCard x, TankImageCard y)
         {
-            return x.CardNumber == y.CardNumber && x.ImageId > 0;
+            if (x == null || y == null) return false;
+            return x.CardNumber == y.CardNumber;
         }
+
         public int GetHashCode(TankImageCard obj)
         {
             return obj.CardNumber.GetHashCode();
         }
     }
+
 }

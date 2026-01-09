@@ -45,6 +45,7 @@ namespace DigitalCap.Persistence.Extensions
             services.AddScoped<IUserPermissionRepository, UserPermissionRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IVesselRepository, VesselRepository>();
+            services.AddScoped<IProjectReportRepository, ProjectReportRepository>();
 
             services.AddHttpClient<IHttpService, HttpService>();
             // Services

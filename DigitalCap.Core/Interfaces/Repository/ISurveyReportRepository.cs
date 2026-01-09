@@ -27,5 +27,16 @@ namespace DigitalCap.Core.Interfaces.Repository
         Task<ProjectReportMapping> GetProjectReportTemplate(int projectId, int templateId, Guid sectionId);
         Task<List<ReportTemplateSection>> GetTemplatSections(int templateId);
         Task<List<UpskillImageData>> GetBulkUploadUnplacedImages();
+        Task<bool> CreateProjectTemplate(ProjectReportMapping model);
+        Task<bool> DeleteProjectTemplate(int projectId, int templateId);
+        Task InsertBulkUploadImage(int imageId);
+        Task<int> DeleteBulkUploadImage(int imageId);
+        Task<bool> AddEditImageNew(int imgId, string imageBase64);
+        Task<List<string>> GetUnplacedImages(int projectId, string assignmentId);
+        Task<string> GetImage(string fileId);
+        Task<List<AssignmentsDropdownModel>> GetReportFromAssignments(string assignmentIds);
+        Task<bool> DeleteImage(string assignmentId, string fileId);
+        Task<bool> DeleteCard(int projectId, string cardId, string sequenceId, string assignmentId, string appId);
+        Task<int> UploadImage(string assignmentId, string fileId);
     }
 }

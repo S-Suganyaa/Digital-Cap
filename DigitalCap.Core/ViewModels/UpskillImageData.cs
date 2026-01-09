@@ -13,4 +13,9 @@ namespace DigitalCap.Core.ViewModels
         public DateTime? UpdateDttm { get; set; }
         public int ProjectId { get; set; }
     }
+    public class DownloadImageResultDto
+    {
+        public string Base64 { get; set; }
+        public string ContentType { get; set; }
+    }
 }
