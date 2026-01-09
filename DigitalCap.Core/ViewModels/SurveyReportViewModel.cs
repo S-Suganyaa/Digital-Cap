@@ -20,4 +20,22 @@ namespace DigitalCap.Core.ViewModels
         public bool IsRleased { get; set; }
         public bool IsConfiguredProject { get; set; }
     }
+
+
+    public class MergeReportResultViewModel
+    {
+        public string Base64 { get; set; }
+        public string FileName { get; set; }
+    }
+
+    public class ValidateReportResponse
+    {
+        public string ResultSession { get; set; }
+    }
+    public class UploadPhotoResultDto
+    {
+        public string FileId { get; set; }
+        public string Image { get; set; }
+    }
+
 }
