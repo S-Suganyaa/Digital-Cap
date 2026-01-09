@@ -10,6 +10,7 @@ namespace DigitalCap.Core.Interfaces.Repository
 
     public interface IPlatformUserRepository
     {
+        Task<IEnumerable<UserType>> GetUserType(string objectId);
         //Task DeleteUserWCNMappingAsync(string email);
 
         ////Task AddEditUserWCNMappingAsync(string email, string companyName, UserWCNMappingModel model);

@@ -17,7 +17,7 @@ namespace DigitalCap.Persistence.Repositories
         public UserAccountRepository(IUnitOfWork unitOfWork)
        : base(unitOfWork)
         {
-            _logger = logger;
+            //_logger = logger;
         }
 
         //public async Task<UserAccountModel?> GetByAspNetIdAsync(string aspNetUserId)

@@ -4,7 +4,6 @@ using DigitalCap.Core.Models;
 using DigitalCap.Infrastructure.Service;
 using DigitalCap.Persistence.Repositories;
 using Microsoft.AspNet.Identity.EntityFramework;
-using DigitalCAP.Core.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
