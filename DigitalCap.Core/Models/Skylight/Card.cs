@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,12 +8,9 @@ namespace DigitalCap.Core.Models.Skylight
 {
     public class Component
     {
-        [JsonProperty(PropertyName = "componentType")]
         [Required(AllowEmptyStrings = false)]
         public virtual ComponentType ComponentType { get; set; }
-        [JsonProperty(PropertyName = "done")]
         public Done Done { get; set; }
-        [JsonProperty(PropertyName = "sequenceId")]
         public string SequenceId { get; set; }
         public Dictionary<string, Choice> Choices { get; set; }
         public ComponentDecisionLink Link { get; set; }
@@ -43,33 +40,22 @@ namespace DigitalCap.Core.Models.Skylight
     public class ComponentDefault : Component
     {
 
-        [JsonProperty(PropertyName = "componentType")]
         [Required(AllowEmptyStrings = false)]
         public override ComponentType ComponentType { get; set; }
-        [JsonProperty(PropertyName = "done")]
         public Done Done { get; set; }
-        [JsonProperty(PropertyName = "doneAction")]
         public Action DoneAction { get; set; }
     }
     public class ComponentCompletion : Component
     {
 
-        [JsonProperty(PropertyName = "componentType")]
         [Required(AllowEmptyStrings = false)]
         public override ComponentType ComponentType { get; set; }
-        [JsonProperty(PropertyName = "completed")]
         public bool? Completed { get; set; }
-        [JsonProperty(PropertyName = "completionTime")]
         public string CompletionTime { get; set; }
-        [JsonProperty(PropertyName = "done")]
         public Done Done { get; set; }
-        [JsonProperty(PropertyName = "doneAction")]
         public Action DoneAction { get; set; }
-        [JsonProperty(PropertyName = "moveDelay")]
         public int? MoveDelay { get; set; }
-        [JsonProperty(PropertyName = "returnPrev")]
         public bool? ReturnPrev { get; set; }
-        [JsonProperty(PropertyName = "scrollLock")]
         public bool? ScrollLock { get; set; }
     }
     //public class ComponentOpenSequence : Component
@@ -79,7 +65,6 @@ namespace DigitalCap.Core.Models.Skylight
     public class Layout
     {
 
-        [JsonProperty(PropertyName = "layoutType")]
         [Required(AllowEmptyStrings = false)]
         public virtual LayoutType LayoutType { get; set; }
 
@@ -90,18 +75,12 @@ namespace DigitalCap.Core.Models.Skylight
         public string Placeholder { get; set; }
         public bool? ShowIcon { get; set; }
 
-        [JsonProperty(PropertyName = "alignment")]
         public Alignment Alignment { get; set; }
-        [JsonProperty(PropertyName = "autoFit")]
         public bool? AutoFit { get; set; }
-        [JsonProperty(PropertyName = "bgColor")]
         public string BgColor { get; set; }
-        [JsonProperty(PropertyName = "fgColor")]
         public string FgColor { get; set; }
-        [JsonProperty(PropertyName = "text")]
         [Required(AllowEmptyStrings = false)]
         public string Text { get; set; }
-        [JsonProperty(PropertyName = "textSize")]
         [Required(AllowEmptyStrings = false)]
         public TextSize TextSize { get; set; }
 
@@ -125,7 +104,6 @@ namespace DigitalCap.Core.Models.Skylight
     }
     public class LayoutTextInputFormat
     {
-        [JsonProperty(PropertyName = "type")]
         public LayoutTextInputFormatType Type { get; set; }
 
         public int? MaxChar { get; set; }
@@ -155,22 +133,14 @@ namespace DigitalCap.Core.Models.Skylight
     }
     public class LayoutText : Layout
     {
-
-        [JsonProperty(PropertyName = "layoutType")]
         [Required(AllowEmptyStrings = false)]
         public override LayoutType LayoutType { get; set; }
-        [JsonProperty(PropertyName = "alignment")]
         public Alignment Alignment { get; set; }
-        [JsonProperty(PropertyName = "autoFit")]
         public bool? AutoFit { get; set; }
-        [JsonProperty(PropertyName = "bgColor")]
         public string BgColor { get; set; }
-        [JsonProperty(PropertyName = "fgColor")]
         public string FgColor { get; set; }
-        [JsonProperty(PropertyName = "text")]
         [Required(AllowEmptyStrings = false)]
         public string Text { get; set; }
-        [JsonProperty(PropertyName = "textSize")]
         [Required(AllowEmptyStrings = false)]
         public TextSize TextSize { get; set; }
 
@@ -200,25 +170,17 @@ namespace DigitalCap.Core.Models.Skylight
     }
     public class ComponentDecisionLink
     {
-
-        [JsonProperty(PropertyName = "text")]
         [Required(AllowEmptyStrings = false)]
         public string Text { get; set; }
-        [JsonProperty(PropertyName = "sequenceId")]
         [Required(AllowEmptyStrings = false)]
         public string SequenceId { get; set; }
-        [JsonProperty(PropertyName = "cardId")]
         public string CardId { get; set; }
     }
     public class Choice
     {
-        [JsonProperty(PropertyName = "label")]
         public string Label { get; set; }
-        [JsonProperty(PropertyName = "position")]
         public decimal? Position { get; set; }
-        [JsonProperty(PropertyName = "selected")]
         public bool? Selected { get; set; }
-        [JsonProperty(PropertyName = "action")]
         public Action Action { get; set; }
     }
 
