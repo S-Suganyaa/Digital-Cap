@@ -747,12 +747,9 @@ namespace DigitalCap.Persistence.Repositories
                    sql: "CAP.ReadProjectVesselTypeById",
                    param: new { ID = id },
                    commandType: CommandType.StoredProcedure,
-                   transaction: Transaction
-                   );
+                   transaction: Transaction);
 
             return result;
-
         }
-
     }
 }

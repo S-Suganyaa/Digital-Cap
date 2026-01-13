@@ -46,6 +46,9 @@ namespace DigitalCap.Core.Models
 
         public bool HasAnyPermissions(params Permission[] permissions)
             => permissions.Any(p => Permissions.Contains(p));
+
     }
+
+
 }
 
