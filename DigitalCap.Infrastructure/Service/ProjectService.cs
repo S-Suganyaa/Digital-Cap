@@ -22,7 +22,6 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
-using System.Web.Mvc;
 using Section = DigitalCap.Core.ViewModels.Section;
 
 namespace DigitalCap.Infrastructure.Service

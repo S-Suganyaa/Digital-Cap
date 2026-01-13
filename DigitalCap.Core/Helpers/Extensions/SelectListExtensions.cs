@@ -1,7 +1,7 @@
-﻿using System;
+﻿using DigitalCap.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Web.Mvc;
 
 namespace DigitalCap.Core.Helpers.Extensions
 {

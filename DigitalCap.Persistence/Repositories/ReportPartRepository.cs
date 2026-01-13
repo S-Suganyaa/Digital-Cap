@@ -1,8 +1,10 @@
 ﻿using Dapper;
 using DigitalCap.Core.Interfaces.Repository;
 using DigitalCap.Core.Models.ReportConfig;
+using DigitalCap.Core.Models.Survey;
 using DigitalCap.Core.Models.Tank;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,12 +18,7 @@ namespace DigitalCap.Persistence.Repositories
         protected readonly IUnitOfWork _unitOfWork;
         protected IDbConnection Connection => _unitOfWork?.Connection!;
         protected IDbTransaction Transaction => _unitOfWork?.Transaction!;
-        public async Task<bool> CreateProjectReportTemplate(
-     int vesselTypeId,
-     string userName,
-     int projectId,
-     bool imoExists = false,
-     int copyprojectId = 0)
+        public async Task<bool> CreateProjectReportTemplate(int vesselTypeId, string userName, int projectId, bool imoExists = false, int copyprojectId = 0)
         {
             try
             {
@@ -46,6 +43,622 @@ namespace DigitalCap.Persistence.Repositories
                 return false;
             }
         }
+        public async Task<ReportConfigDropDownDataList> GetVesselTypes()
+        {
+            try
+            {
+                var vesselTypes = await Connection.QueryAsync<VesselTypes>(
+                    sql: "[Config].[Get_VesselTypes]",
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction
+                );
+
+                return new ReportConfigDropDownDataList
+                {
+                    vesselTypes = vesselTypes.ToList()
+                };
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        //reportpart
+        public async Task<ReportConfigDropDownDataList> GetReportPartsByVesselTypeAsync(int vesselTypeId)
+        {
+            try
+            {
+                var reportTemplates = await Connection.QueryAsync<ReportTemplates>(
+                    sql: "[Config].[Get_ReportPartsByVesselType]",
+                    param: new { VesselTypeId = vesselTypeId },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction
+                );
+
+                return new ReportConfigDropDownDataList
+                {
+                    reportTemplates = reportTemplates.ToList()
+                };
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<ReportTemplates>> GetVesselTypePartMapping(int vesselTypeId)
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<ReportTemplates>(
+                    sql: "[Config].[Get_ReportPartsByVesselType]",
+                    param: new { VesselTypeId = vesselTypeId },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction
+                );
+
+                return result.ToList();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        //reportpart
+        public async Task<PartSectionNamesList> GetSectionNamesByPartNameAsync(int vesselTypeId, string partName)
+        {
+            try
+            {
+                using (var multi = await Connection.QueryMultipleAsync(
+                    sql: "[Config].[Get_SectionNamesByPartName]",
+                    param: new
+                    {
+                        VesselTypeId = vesselTypeId,
+                        PartName = partName
+                    },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction
+                ))
+                {
+                    return new PartSectionNamesList
+                    {
+                        NormalSections = (await multi.ReadAsync<NormalSectionNames>()).ToList(),
+                        TanksSections = (await multi.ReadAsync<TankSectionNames>()).ToList()
+                    };
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        //reportpart
+        public async Task<PartSectionNamesList> GetSectionNamesByPartId(int vesselTypeId, int partId)
+        {
+            try
+            {
+                using (var multi = await Connection.QueryMultipleAsync(
+                    sql: "[config].[GetVesselTypeSectionNormalMapping]",
+                    param: new
+                    {
+                        PartId = partId,
+                        VesselTypeId = vesselTypeId
+                    },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction
+                ))
+                {
+                    return new PartSectionNamesList
+                    {
+                        NormalSections = (await multi.ReadAsync<NormalSectionNames>()).ToList(),
+                        SubSections = (await multi.ReadAsync<SubSectionNames>()).ToList(),
+                        TanksSections = (await multi.ReadAsync<TankSectionNames>()).ToList()
+                    };
+                }
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        //reportpart
+        public async Task<bool> CreateReportPart(VesselTypeReportConfigList reportConfigList, int vesselTypeId, string modifiedBy)
+        {
+            try
+            {
+                var dtParts = BuildReportParts(reportConfigList.reportParts, modifiedBy);
+                var dtSections = BuildNormalSections(reportConfigList.normalSectionMappings, modifiedBy);
+                var dtTankSections = BuildTankSections(reportConfigList.tankSectionMappings, modifiedBy);
+                var dtSubSections = BuildSubSections(reportConfigList.normalSubSectionMappings, modifiedBy);
+
+                await Connection.ExecuteAsync(
+                    sql: "[Config].[Create_VesseltypeReportConfig]",
+                    param: new
+                    {
+                        VesselTypeId = vesselTypeId,
+                        ReportParts = dtParts.AsTableValuedParameter("[Config].[VesselTypePartMappingTbl]"),
+                        NormalSectionMappings = dtSections.AsTableValuedParameter("[Config].[VesselTypeNormalSectionMappingTbl]"),
+                        TankSectionMappings = dtTankSections.AsTableValuedParameter("[Config].[VesselTypeTankSectionMappingTbl]"),
+                        SubSectionMappings = dtSubSections.AsTableValuedParameter("[Config].[VesselTypeSubSectionMappingTbl]")
+                    },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction
+                );
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private DataTable BuildReportParts(IEnumerable<VesselTypePartMapping>? parts, string modifiedBy)
+        {
+            var dt = new DataTable();
+            dt.Columns.Add("VesselTypePartMappingId", typeof(int));
+            dt.Columns.Add("VesselTypeId", typeof(int));
+            dt.Columns.Add("PartName", typeof(string));
+            dt.Columns.Add("SequenceNo", typeof(int));
+            dt.Columns.Add("IsActive", typeof(bool));
+            dt.Columns.Add("CreatedBy", typeof(string));
+            dt.Columns.Add("IsDeleted", typeof(bool));
+            dt.Columns.Add("ModifiedBy", typeof(string));
+
+            if (parts == null || !parts.Any())
+            {
+                dt.Rows.Add(dt.NewRow());
+                return dt;
+            }
+
+            foreach (var p in parts)
+            {
+                dt.Rows.Add(
+                    p.vesselTypePartMappingId,
+                    p.VesselTypeId,
+                    p.PartName,
+                    p.SequenceNo,
+                    p.IsActive,
+                    p.CreatedBy,
+                    p.IsDeleted,
+                    modifiedBy
+                );
+            }
+
+            return dt;
+        }
+
+        private DataTable BuildNormalSections(IEnumerable<VesselTypeSectionMapping>? sections, string modifiedBy)
+        {
+            var dt = new DataTable();
+            dt.Columns.Add("VesselTypeNormalSectionMappingId", typeof(Guid));
+            dt.Columns.Add("VesselTypePartMappingId", typeof(int));
+            dt.Columns.Add("VesselTypeId", typeof(int));
+            dt.Columns.Add("PartName", typeof(string));
+            dt.Columns.Add("SectionName", typeof(string));
+            dt.Columns.Add("SubHeader", typeof(string));
+            dt.Columns.Add("TotalCards", typeof(int));
+            dt.Columns.Add("PlaceholderCount", typeof(int));
+            dt.Columns.Add("FileNameCount", typeof(int));
+            dt.Columns.Add("IsActive", typeof(bool));
+            dt.Columns.Add("CreatedBy", typeof(string));
+            dt.Columns.Add("IsDeleted", typeof(bool));
+            dt.Columns.Add("ModifiedBy", typeof(string));
+
+            if (sections == null || !sections.Any())
+            {
+                dt.Rows.Add(dt.NewRow());
+                return dt;
+            }
+
+            foreach (var s in sections)
+            {
+                dt.Rows.Add(
+                    s.VesselTypeNormalSectionMappingId ?? Guid.Empty,
+                    s.VesselTypePartMappingId,
+                    s.VesselTypeId,
+                    s.PartName,
+                    s.SectionName,
+                    s.SubHeader,
+                    s.TotalCards,
+                    s.PlaceholderCount,
+                    s.FileNameCount,
+                    s.IsActive,
+                    s.CreatedBy,
+                    s.IsDeleted,
+                    modifiedBy
+                );
+            }
+
+            return dt;
+        }
+
+        private DataTable BuildTankSections(IEnumerable<VesselTypeTankSectionMapping>? tanks, string modifiedBy)
+        {
+            var dt = new DataTable();
+            dt.Columns.Add("VesselTypePartMappingId", typeof(int));
+            dt.Columns.Add("VesselTypeId", typeof(int));
+            dt.Columns.Add("PartName", typeof(string));
+            dt.Columns.Add("TankTypeId", typeof(int));
+            dt.Columns.Add("TotalCards", typeof(int));
+            dt.Columns.Add("PlaceholderCount", typeof(int));
+            dt.Columns.Add("FileNameCount", typeof(int));
+            dt.Columns.Add("IsActive", typeof(bool));
+            dt.Columns.Add("CreatedBy", typeof(string));
+            dt.Columns.Add("IsDeleted", typeof(bool));
+            dt.Columns.Add("ModifiedBy", typeof(string));
+
+            if (tanks == null || !tanks.Any())
+            {
+                dt.Rows.Add(dt.NewRow());
+                return dt;
+            }
+
+            foreach (var t in tanks)
+            {
+                dt.Rows.Add(
+                    t.VesselTypePartMappingId,
+                    t.VesselTypeId,
+                    t.PartName,
+                    t.TankTypeId,
+                    t.TotalCards,
+                    t.PlaceholderCount,
+                    t.FileNameCount,
+                    t.IsActive,
+                    t.CreatedBy,
+                    t.IsDeleted,
+                    modifiedBy
+                );
+            }
+
+            return dt;
+        }
+
+        private DataTable BuildSubSections(IEnumerable<VesselTypeSubSectionMapping>? subSections, string modifiedBy)
+        {
+            var dt = new DataTable();
+            dt.Columns.Add("SubSectionId", typeof(Guid));
+            dt.Columns.Add("SectionId", typeof(Guid));
+            dt.Columns.Add("SectionName", typeof(string));
+            dt.Columns.Add("TotalCards", typeof(int));
+            dt.Columns.Add("PlaceholderCount", typeof(int));
+            dt.Columns.Add("FileNameCount", typeof(int));
+            dt.Columns.Add("IsActive", typeof(bool));
+            dt.Columns.Add("IsDeleted", typeof(bool));
+            dt.Columns.Add("CreatedBy", typeof(string));
+            dt.Columns.Add("ModifiedBy", typeof(string));
+
+            if (subSections == null || !subSections.Any())
+            {
+                dt.Rows.Add(dt.NewRow());
+                return dt;
+            }
+
+            foreach (var s in subSections)
+            {
+                dt.Rows.Add(
+                    s.SubSectionId,
+                    s.SectionId,
+                    s.SectionName,
+                    s.TotalCards,
+                    s.PlaceholderCount,
+                    s.FileNameCount,
+                    s.IsActive,
+                    s.IsDeleted,
+                    s.CreatedBy,
+                    modifiedBy
+                );
+            }
+
+            return dt;
+        }
+
+        public async Task<bool> CheckToShowSectionExportConfig(int projectId, int imoNumber, int partId)
+        {
+            try
+            {
+                var result = await Connection.ExecuteScalarAsync<int>(
+                    sql: "Config.CheckToShowSectionExportConfig",
+                    param: new
+                    {
+                        ProjectId = projectId,
+                        ImoNumber = imoNumber,
+                        PartId = partId
+                    },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction
+                );
+
+                return result == 1;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateGenericImageCard(GenericImageCard card)
+        {
+            try
+            {
+                await Connection.ExecuteAsync(
+                    sql: "[config].[UpdateGenericImageCard]",
+                    param: new
+                    {
+                        card.Id,
+                        card.ProjectId,
+                        card.TemplateId,
+                        card.SectionId,
+                        card.CardNumber,
+                        card.DescriptionId,
+                        card.AdditionalDescription,
+                        card.CurrentCondition,
+                        card.ImageId,
+                        card.IsActive,
+                        card.src
+                    },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction
+                );
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public async Task<GenericImageCard?> GetGenericImageCardByName(int projectId, int templateId, Guid sectionId, int cardNumber)
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<GenericImageCard>(
+                    sql: "[config].[GetGenericImagecardByName]",
+                    param: new
+                    {
+                        ProjectId = projectId,
+                        TemplateId = templateId,
+                        SectionId = sectionId,
+                        CardNumber = cardNumber
+                    },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction
+                );
+
+                return result.FirstOrDefault();
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        public async Task<List<ProjectCheckBox>> GetGradingCondition()
+        {
+            var result = await Connection.QueryAsync<ProjectCheckBox>(
+                sql: "[Config].[GetGradingCondition]",
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return result.ToList();
+        }
+        public async Task<List<ProjectSubSection>> GetNormalSectionByProjectId(int projectId, int partId)
+        {
+            var result = await Connection.QueryAsync<ProjectSubSection>(
+                sql: "[config].[GetNormalsectionsByProjectId]",
+                param: new
+                {
+                    ProjectId = projectId,
+                    PartId = partId
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return result.ToList();
+        }
+
+        public async Task<List<ProjectSubSection>> GetProjectSubsectionBySectionId(Guid sectionId)
+        {
+            var result = await Connection.QueryAsync<ProjectSubSection>(
+                sql: "[Config].[GetProjectSubsectionBySectionId]",
+                param: new
+                {
+                    SectionId = sectionId
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return result.ToList();
+        }
+
+        public async Task<List<ProjectCheckBox>> GetGradingConditionByProjectId(int projectId)
+        {
+            var result = await Connection.QueryAsync<ProjectCheckBox>(
+                sql: "[config].[GetGradigConditionByProjectId]",
+                param: new
+                {
+                    ProjectId = projectId
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return result.ToList();
+        }
+        public async Task<List<ProjectGradingUI>> GetGradingBySectionId(int projectId, Guid sectionId)
+        {
+            var result = await Connection.QueryAsync<ProjectGradingUI>(
+                sql: "[config].[GetProjectSectionGrading]",
+                param: new
+                {
+                    ProjectId = projectId,
+                    SectionId = sectionId
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return result.ToList();
+        }
+
+        public async Task<List<ImageDescriptionUI>> GetImageDescriptionsBySectionId(int projectId, Guid sectionId)
+        {
+            var result = await Connection.QueryAsync<ImageDescriptionUI>(
+                sql: "[config].[GetProjectSectionDescription]",
+                param: new
+                {
+                    ProjectId = projectId,
+                    SectionId = sectionId
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return result.ToList();
+        }
+        public async Task<List<ImageDescriptionUI>> GetImageDescriptionsBySubSectionId(int projectId, Guid sectionId)
+        {
+            var result = await Connection.QueryAsync<ImageDescriptionUI>(
+                sql: "[config].[GetProjectSubSectionDescription]",
+                param: new
+                {
+                    ProjectId = projectId,
+                    SectionId = sectionId
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return result.ToList();
+        }
+
+        public async Task<List<GenericImageCard>> GetGenericImageCard(int projectId, int templateId, Guid sectionId)
+        {
+            var result = await Connection.QueryAsync<GenericImageCard>(
+                sql: "[config].[GetGenericImageCard]",
+                param: new
+                {
+                    ProjectId = projectId,
+                    TemplateId = templateId,
+                    SectionId = sectionId
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return result.ToList();
+        }
+
+        public async Task<List<ProjectTankUI>> GetTankSectionByProjectId(int projectId, int partId, int imoNumber)
+        {
+            var result = await Connection.QueryAsync<ProjectTankUI>(
+                sql: "[config].[GetTankSectionsByProjectid]",
+                param: new
+                {
+                    ProjectId = projectId,
+                    PartId = partId,
+                    ImoNumber = imoNumber
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return result.ToList();
+        }
+
+        public async Task<List<Core.Models.Survey.Grading>> GetH_IGrading(bool isGasCarrier)
+        {
+            var result = await Connection.QueryAsync<Core.Models.Survey.Grading>(
+                sql: "[Config].[GetH_IGrading]",
+                param: new
+                {
+                    GasGrading = isGasCarrier
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return result.ToList();
+        }
+
+        public async Task<List<ImageDescriptionUI>> GetImageDescriptionsByTankTypeId(int projectId, int tankTypeId)
+        {
+            var result = await Connection.QueryAsync<ImageDescriptionUI>(
+                sql: "[config].[GetGradigConditionByProjectId]",
+                param: new
+                {
+                    ProjectId = projectId,
+                    TankTypeId = tankTypeId
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return result.ToList();
+        }
+
+        public async Task<List<ProjectGradingConditionMapping>> GetHandIGradingConditionByProjectId(int projectId)
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<ProjectGradingConditionMapping>(
+                   sql: "[config].[GetHandIProjectGradingConditionByProjectId]",
+                    new { ProjectId = projectId },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction
+                );
+
+                return result.ToList();
+            }
+            catch (SqlException)
+            {
+                throw; // or log
+            }
+        }
+
+
+        public async Task<List<ProjectGradingMapping>> GetH_IProjectGradingByProjectId(int projectId)
+        {
+            var result = await Connection.QueryAsync<ProjectGradingMapping>(
+                sql: "[config].[GetHandIProjectGradingByProjectId]",
+                param: new
+                {
+                    ProjectId = projectId
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return result.ToList();
+        }
+
+        public async Task<ProjectPart> GetProjectTemplateTitle(int partId, int projectId)
+        {
+            try
+            {
+                using (var multi = await Connection.QueryMultipleAsync(
+                    sql: "[config].[GetTemplateTitle]",
+                    param: new
+                    {
+                        partId = partId,
+                        projectId = projectId
+                    },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction
+                ))
+                {
+                    return await multi.ReadFirstOrDefaultAsync<ProjectPart>();
+                }
+            }
+            catch (Exception)
+            {
+                return null; // or throw / log
+            }
+        }
 
     }
+
 }
+
