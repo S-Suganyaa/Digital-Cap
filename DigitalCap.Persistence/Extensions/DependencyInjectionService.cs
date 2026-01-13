@@ -49,6 +49,8 @@ namespace DigitalCap.Persistence.Extensions
             services.AddScoped<IUserAccountRepository, UserAccountRepository>();
             services.AddScoped<IEmailRepository, EmailRepository>();
             services.AddScoped<IPlatformUserRepository, PlatformUserRepository>();
+            services.AddScoped<ISecurityClientRepository, SecurityClientRepository>();
+
 
             //services.AddScoped<ISecurityClientRepository, SecurityClientRepository>();
 

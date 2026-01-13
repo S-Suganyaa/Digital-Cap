@@ -1,0 +1,109 @@
+﻿using DigitalCap.Core.Interfaces.Repository;
+using DigitalCap.Core.Interfaces.Service;
+using DigitalCap.Core.Models;
+using DigitalCap.Core.Models.ReportConfig;
+using DigitalCap.Infrastructure.Service;
+using Microsoft.AspNetCore.Mvc;
+
+namespace DigitalCap.WebApi.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ReportConfigAPIController : Controller
+    {
+        private readonly IConfiguration _configData;
+        private readonly IReportPartService _reportPartService;
+        private readonly ISecurityService _securityService;
+        public IWebHostEnvironment WebHostEnvironment { get; set; }
+        public ReportConfigAPIController(ReportPartService reportPartService, IConfiguration configData,
+            ISecurityService securityService)
+        {
+            _reportPartService = reportPartService;
+
+            _configData = configData;
+            _securityService = securityService;
+        }
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetReportPartsByVesselType(int vesselTypeId)
+        {
+            if (vesselTypeId == 0)
+            {
+                return BadRequest("Invalid Vessel Type ID.");
+            }
+
+            // Call your service or data layer to get the report parts
+            var reportParts = await _reportPartService.GetReportPartsByVesselType(vesselTypeId);
+
+            if (reportParts == null)
+            {
+                return NotFound("No report parts found for the specified Vessel Type.");
+            }
+
+            return Ok(reportParts);
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetSectionNamesByPartName(int vesselTypeId, string partName)
+        {
+            if (vesselTypeId == 0)
+            {
+                return BadRequest("Invalid Vessel Type ID.");
+            }
+
+            // Call your service or data layer to get the report parts
+            var reportParts = await _reportPartService.GetSectionNamesByPartNameAsync(vesselTypeId, partName);
+
+            if (reportParts == null)
+            {
+                return NotFound("No report parts found for the specified Vessel Type.");
+            }
+
+            return Ok(reportParts);
+        }
+
+        [HttpGet("[action]/{vesselTypeId}/{partId}")]
+        public async Task<IActionResult> GetSectionNamesByPartId(int vesselTypeId, int partId)
+        {
+            if (vesselTypeId == 0)
+            {
+                return BadRequest("Invalid Vessel Type ID.");
+            }
+
+            // Call your service or data layer to get the report parts
+            var reportParts = await _reportPartService.GetSectionNamesByPartIdAsync(vesselTypeId, partId);
+
+            if (reportParts == null)
+            {
+                return NotFound("No report parts found for the specified Vessel Type.");
+            }
+
+            return Ok(reportParts);
+        }
+        [HttpPost("[action]")]
+        public async Task<ActionResult> CreateReportPartConfig(VesselTypeReportConfigList reportConfigList, [FromQuery] int vesselTypeId)
+        {
+            var result = await _reportPartService.CreateReportPart(reportConfigList, vesselTypeId);
+            return Ok(result);
+        }
+
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> GetReportTemplatePart([FromBody] DataSourceRequest request, int vesselTypeId = 0)
+        {
+            if (vesselTypeId == 0)
+            {
+                return Ok(new { });
+            }
+
+            // Call your service or data layer to get the report parts
+            var reportParts = (await _reportPartService.GetReportPartsByVesselTypeAsync(vesselTypeId)).Data.reportTemplates;
+
+            if (reportParts == null)
+            {
+                return NotFound("No report parts found for the specified Vessel Type.");
+            }
+
+            return Ok(reportParts);
+        }
+    }
+}
