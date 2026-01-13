@@ -177,14 +177,14 @@ namespace DigitalCap.WebApi.Controllers
             var result = _tankService.ManageTankFilter_TankType(IMO);
             return Ok(result);
         }
-
+        [HttpGet("[action]")]
         public async Task<IActionResult> ManageTankFilter_Project(string IMO)
         {
             var result = _tankService.ManageTankFilter_VesselName(IMO);
             return Ok(result);
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         public async Task<IActionResult> ManageTankActiveCheckBox(string data, bool status, string IMO)
         {
             var result = _tankService.ManageTankActiveCheckBox(data, status, IMO);
