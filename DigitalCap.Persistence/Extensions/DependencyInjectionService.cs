@@ -49,6 +49,8 @@ namespace DigitalCap.Persistence.Extensions
             services.AddScoped<IUserAccountRepository, UserAccountRepository>();
             services.AddScoped<IEmailRepository, EmailRepository>();
             services.AddScoped<IPlatformUserRepository, PlatformUserRepository>();
+            services.AddScoped<ISecurityClientRepository, SecurityClientRepository>();
+
 
             //services.AddScoped<ISecurityClientRepository, SecurityClientRepository>();
 
@@ -59,6 +61,9 @@ namespace DigitalCap.Persistence.Extensions
             services.AddScoped<ISecurityService, SecurityService>();
             services.AddScoped<ISurveyReportService, SurveyReportService>();
             services.AddScoped<IVesselService, VesselService>();
+            services.AddScoped<ISecurityClientService, SecurityClientService>();
+            services.AddScoped<IUserAccountService, UserAccountService>();
+            services.AddScoped<ITankService, TankService>();
 
             //services.AddTransient(serviceProvider =>
             //{

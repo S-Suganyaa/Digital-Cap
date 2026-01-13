@@ -8,6 +8,7 @@ using DigitalCap.WebApi.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -94,7 +95,7 @@ namespace DigitalCap.Persistence.Repositories
         {
             try
             {
-                var result= await Connection.QueryFirstOrDefaultAsync<Project>(
+                var result = await Connection.QueryFirstOrDefaultAsync<Project>(
                     sql: "CAP.Read_Project_ById",
                     param: new { id },
                     commandType: CommandType.StoredProcedure,
@@ -724,7 +725,7 @@ namespace DigitalCap.Persistence.Repositories
             try
             {
                 var result = await Connection.QueryAsync<CAPCoordinator>(
-                    sql: "[CAP].[Read_CAPCoordinator_ByRegion]", 
+                    sql: "[CAP].[Read_CAPCoordinator_ByRegion]",
                     param: new
                     {
                         Region = region,
@@ -741,6 +742,15 @@ namespace DigitalCap.Persistence.Repositories
                 throw;
             }
         }
+        public async Task<string> GetProjectVesselType(int id)
+        {
+            var result = await Connection.QueryFirstOrDefaultAsync<string>(
+                   sql: "CAP.ReadProjectVesselTypeById",
+                   param: new { ID = id },
+                   commandType: CommandType.StoredProcedure,
+                   transaction: Transaction);
 
+            return result;
+        }
     }
 }

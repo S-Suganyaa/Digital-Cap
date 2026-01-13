@@ -25,6 +25,6 @@ namespace DigitalCap.Core.Interfaces.Repository
         Task UpdatePriority(int id, int? priority);
         Task<IEnumerable<AllProjectsGrid>> GetAllProjectsGridData();
         Task<List<CAPCoordinator>> GetCAPCoordinator(string region, bool includeManager);
-
+        Task<string> GetProjectVesselType(int id);
     }
 }

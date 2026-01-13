@@ -1,5 +1,8 @@
 ﻿using DigitalCap.Core.Enumerations;
+using DigitalCap.Core.Models.ReportConfig;
 using DigitalCap.Core.Models.Tank;
+using DigitalCap.Core.Models.VesselModel;
+using DigitalCap.Core.Models.View.Admin;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -23,5 +26,18 @@ namespace DigitalCap.Core.Interfaces.Repository
         Task<List<TankCheckBox>> GetTemplateTankGradingCondition(int Id);
         Task<List<TankGradingUI>> GetTemplateTankGrading(int tanktypeId, int projectId, string vesseltype);
         Task<List<TankImageCard>> GetProjectTankImageCard(int projectId, int templateId, Guid sectionId);
+        Task<TankImageCard> GetProjectTankImagCardByName(int projectId, int templateId, Guid sectionId, int cardNumber);
+        Task<bool> UpdateProjectTankImageCard(TankImageCard tankImageCard);
+        Task<bool> CreateProjectTankImageCard(TankImageCard tankImageCard);
+        Task<List<TankTypes>> GetTankTypes();
+        Task<List<TankTypes>> GetTankTypes(int projectId, string vesseltype);
+        Task<List<Core.Models.View.Admin.VesselTypes>> GetVesselType();
+        Task<List<VesselDetails>> GetVesselIMONo();
+        Task<List<Core.Models.View.Admin.Tank>> GetTanks_Vessel(string username = null);
+        Task<VesselTank> GetTanks_VesselById(Guid Id, int? Projectid);
+        Task<bool> UpdateTank(VesselTank vesselTank);
+        Task<List<VesselTankDetails>> GetVesselTypeList();
+        Task<List<IMOTankFilterModel>> GetProjectNames(string imoNumber);
+        Task<bool> UpdateStatus(List<Guid> tankIds, bool status);
     }
 }
