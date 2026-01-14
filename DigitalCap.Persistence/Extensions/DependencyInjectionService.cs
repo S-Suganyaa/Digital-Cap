@@ -50,7 +50,9 @@ namespace DigitalCap.Persistence.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IVesselRepository, VesselRepository>();
             services.AddScoped<IProjectReportRepository, ProjectReportRepository>();
-            services.AddScoped<IEmailRepository, EmailRepository>();           
+            services.AddScoped<IUserAccountRepository, UserAccountRepository>();
+            services.AddScoped<IEmailRepository, EmailRepository>();
+            services.AddScoped<IPlatformUserRepository, PlatformUserRepository>();
             services.AddScoped<ISecurityClientRepository, SecurityClientRepository>();
 
 
@@ -69,6 +71,7 @@ namespace DigitalCap.Persistence.Extensions
             services.AddScoped<IUserAccountService, UserAccountService>();
             services.AddScoped<IPlatformUserService, PlatformUserService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ITankService, TankService>();
 
 
             //services.AddTransient(serviceProvider =>
@@ -80,8 +83,8 @@ namespace DigitalCap.Persistence.Extensions
             //    return new Func<ApplicationUser>(() => lazyResult.Value);
             //});
 
-            
-            
+
+
 
             return services;
         }

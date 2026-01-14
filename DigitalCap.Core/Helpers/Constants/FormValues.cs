@@ -1,9 +1,9 @@
 ﻿using DigitalCap.Core.Enumerations;
 using DigitalCap.Core.Helpers.Extensions;
+using DigitalCap.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Web.Mvc;
 using AgreementOwnerEnum = DigitalCap.Core.Enumerations.AgreementOwner;
 using CAPRegionEnum = DigitalCap.Core.Enumerations.CapRegion;
 
@@ -33,19 +33,18 @@ namespace DigitalCap.Core.Helpers.Constants
             "Client Admin",
             "Client User"
         };
+        public static SelectList RepairCondition => new SelectList
+{
+    new SelectListItem { Text = "Before Repair", Value = "id1" },
+    new SelectListItem { Text = "After Repair", Value = "id2" }
+};
 
-        public static SelectList RepairCondition => new SelectList(new List<SelectListItem>()
-            {
-                new SelectListItem() { Text = "Before Repair", Value = "id1" },
-                new SelectListItem() { Text = "After Repair", Value = "id2" }
-            }, "Value", "Text");
 
-        public static SelectList ModificationCondition => new SelectList(new List<SelectListItem>()
-            {
-                new SelectListItem() { Text = "Before Modification", Value = "id1" },
-                new SelectListItem() { Text = "After Modification", Value = "id2" }
-            }, "Value", "Text");
-
+        public static SelectList ModificationCondition => new SelectList
+        {
+            new SelectListItem { Text = "Before Modification", Value = "id1" },
+            new SelectListItem { Text = "After Modification", Value = "id2" }
+        };
         public static IEnumerable<string> CAPRegion => new[]
         {
             CAPRegionEnum.AmericasEurope.GetDescription(),
@@ -61,15 +60,19 @@ namespace DigitalCap.Core.Helpers.Constants
         };
 
         public static IEnumerable<SelectListItem> MonthBuilt =>
-            Enumerable.Range(1, 12).ToSelectListItems(
-                getText: x => new DateTime(1900, x, 1).ToString("MMM"));
+            Enumerable.Range(1, 12)
+                .ToSelectListItems(
+                    getText: x => new DateTime(1900, x, 1).ToString("MMM"));
 
         public static IEnumerable<SelectListItem> AdditionalFilesDataTypes => new[]
         {
             FileDataType.ClientDeliverables,
             FileDataType.InternalDocuments,
             FileDataType.InternalInvoicing,
-        }.ToSelectListItems(getValue: x => ((int)x).ToString());
+        }.ToSelectListItems(
+            getValue: x => ((int)x).ToString(),
+            getText: x => x.ToString()
+        );
 
         public static IEnumerable<AvailableToClient> availableToClients => new[]
         {

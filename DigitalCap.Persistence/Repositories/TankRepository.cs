@@ -4,8 +4,11 @@ using DigitalCap.Core.Interfaces.Repository;
 using DigitalCap.Core.Models;
 using DigitalCap.Core.Models.ReportConfig;
 using DigitalCap.Core.Models.Tank;
+using DigitalCap.Core.Models.VesselModel;
+using DigitalCap.Core.Models.View.Admin;
 using DigitalCap.Core.ViewModels;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -402,6 +405,302 @@ namespace DigitalCap.Persistence.Repositories
 
             return result.ToList();
 
+        }
+
+        public async Task<TankImageCard> GetProjectTankImagCardByName(int projectId, int templateId, Guid sectionId, int cardNumber)
+        {
+            try
+            {
+                var result = await Connection.QueryFirstOrDefaultAsync<TankImageCard>(
+                    sql: "dbo.GetProjectTankImageCardByName",
+                    param: new
+                    {
+                        ProjectId = projectId,
+                        TemplateId = templateId,
+                        SectionId = sectionId,
+                        CardNumber = cardNumber
+                    },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction
+                );
+
+                return result;
+            }
+            catch (Exception)
+            {
+                return null; // or throw/log based on your standard
+            }
+        }
+        public async Task<bool> UpdateProjectTankImageCard(TankImageCard tankImageCard)
+        {
+            var affectedRows = await Connection.ExecuteAsync(
+                sql: "dbo.UpdateTankImageCard",
+                param: new
+                {
+                    tankImageCard.ProjectId,
+                    tankImageCard.TemplateId,
+                    tankImageCard.SectionId,
+                    tankImageCard.CardNumber,
+                    tankImageCard.CardName,
+                    tankImageCard.DescriptionId,
+                    tankImageCard.AdditionalDescription,
+                    tankImageCard.CurrentCondition,
+                    tankImageCard.IsActive
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return affectedRows > 0;
+        }
+        public async Task<bool> CreateProjectTankImageCard(TankImageCard tankImageCard)
+        {
+            var affectedRows = await Connection.ExecuteAsync(
+                sql: "dbo.CreateTankImageCard",
+                param: new
+                {
+                    tankImageCard.ProjectId,
+                    tankImageCard.TemplateId,
+                    tankImageCard.SectionId,
+                    tankImageCard.CardNumber,
+                    tankImageCard.CardName,
+                    tankImageCard.DescriptionId,
+                    tankImageCard.AdditionalDescription,
+                    tankImageCard.CurrentCondition,
+                    tankImageCard.IsActive,
+                    // ❌ Id, src, IsSync intentionally excluded
+                },
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+            );
+
+            return affectedRows > 0;
+        }
+        public async Task<List<TankTypes>> GetTankTypes()
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<TankTypes>(
+                 sql: "dbo.GetTankType",
+                 commandType: CommandType.StoredProcedure,
+                 transaction: Transaction);
+
+                return result.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        public async Task<List<TankTypes>> GetTankTypes(int projectId, string vesseltype)
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<TankTypes>(
+                  sql: "[dbo].[GetTankTypeByTankMapping]",
+                  new
+                  {
+                      ProjectId = projectId,
+                      Veseltype = vesseltype
+                  },
+                 commandType: CommandType.StoredProcedure,
+                 transaction: Transaction);
+                return result.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<VesselDetails>> GetVesselIMONo()
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<VesselDetails>(
+                sql: "dbo.GetIMONumber",
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction);
+
+                return result.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<Core.Models.View.Admin.VesselTypes>> GetVesselType()
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<Core.Models.View.Admin.VesselTypes>(
+                    sql: "dbo.GetVesselType",
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction);
+
+                return result.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        public async Task<List<Core.Models.View.Admin.Tank>> GetTanks_Vessel(string username = null)
+        {
+            try
+            {
+
+                var result = await Connection.QueryAsync<Core.Models.View.Admin.Tank>(
+                    sql: "dbo.Get_Vessel_Tank_ById",
+                    new
+                    {
+                        username = username,
+
+                    },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction);
+
+                return result.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        public async Task<VesselTank> GetTanks_VesselById(Guid Id, int? Projectid)
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<VesselTank>(
+                    sql: "dbo.Get_Vessel_Tank_ById",
+                      new
+                      {
+                          Id = Id,
+                          ProjectId = Projectid
+                      },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction);
+
+                return result.ToList().FirstOrDefault();
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<bool> UpdateTank(VesselTank vesselTank)
+        {
+            try
+            {
+                var rowsAffected = await Connection.ExecuteAsync(
+                    sql: "dbo.Update_Vessel_TankMapping",
+                    param: new
+                    {
+                        vesselTank.Id,
+                        vesselTank.ProjectId,
+                        vesselTank.VesselName,
+                        vesselTank.VesselType,
+                        vesselTank.TankName,
+                        vesselTank.TankTypeId,
+                        vesselTank.IsActive,
+                        // ❌ excluded fields:
+                        // VesselName
+                        // TemplateId
+                        // CreatedDttm
+                        // UpdateDttm
+                    },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction
+                    );
+
+                return rowsAffected > 0;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public async Task<List<VesselTankDetails>> GetVesselTypeList()
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<VesselTankDetails>(
+                    sql: "dbo.GetVesselTypeList",
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction);
+
+                return result.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<IMOTankFilterModel>> GetProjectNames(string imoNumber)
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<IMOTankFilterModel>(
+                    sql: "CAP.GET_PROJECTNAME_BYIMO",
+                    new { IMO = imoNumber },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction);
+                return result.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<bool> UpdateStatus(List<Guid> tankIds, bool status)
+        {
+            if (tankIds == null || !tankIds.Any())
+                return false;
+
+            try
+            {
+                // Create DataTable for TVP
+                var tankIdTable = new DataTable();
+                tankIdTable.Columns.Add("TankId", typeof(Guid));
+
+                foreach (var id in tankIds)
+                {
+                    tankIdTable.Rows.Add(id);
+                }
+
+                var parameters = new DynamicParameters();
+                parameters.Add(
+                    "@TankIds",
+                    tankIdTable.AsTableValuedParameter("dbo.TankIdTableType")
+                );
+                parameters.Add("@Status", status);
+
+                var rows = await Connection.ExecuteAsync(
+                    sql: "dbo.UpdateTankStatus",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                return rows > 0;
+            }
+            catch (Exception ex)
+            {
+                // TODO: log exception
+                return false;
+            }
         }
 
     }

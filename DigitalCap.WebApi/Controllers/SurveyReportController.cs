@@ -25,7 +25,7 @@ namespace DigitalCap.WebApi.Controllers
         {
             _surveyReportService = surveyReportService;
         }
-
+        [HttpGet("[action]")]
         public async Task<IActionResult> SurveyReportIndex(int projectId, int? templateSectionId = null)
         {
             var currentUserName = User.Identity?.Name;
@@ -130,7 +130,7 @@ namespace DigitalCap.WebApi.Controllers
 
             return Content(JsonConvert.SerializeObject(result));
         }
-
+        [HttpGet("[action]")]
         public int GetGradingCount(List<GradingUI> gradings, Guid sectionId)
         {
             try
@@ -202,6 +202,7 @@ namespace DigitalCap.WebApi.Controllers
 
             return Ok(data);
         }
+        [HttpPost("[action]")]
         public async Task<IActionResult> RefreshCertificates(int projectId)
         {
             var data = _surveyReportService.RefreshCertificate(projectId).Result;
@@ -244,7 +245,7 @@ namespace DigitalCap.WebApi.Controllers
             return Ok(result);
         }
 
-        //[HttpPost]
+        // [HttpPost("[action]")]
         //public ActionResult ValidatePreviousTabReport(int projectId)
         //{
         //    try
@@ -300,10 +301,16 @@ namespace DigitalCap.WebApi.Controllers
         }
 
         // [AllowAnonymous]
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        //public IActionResult Error()
+        //{
+        //    return Ok(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        //}
+
+        [NonAction]
         public IActionResult Error()
         {
-            return Ok(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return Problem("An error occurred");
         }
 
         [HttpPost("[action]")]
@@ -338,7 +345,7 @@ namespace DigitalCap.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
+         [HttpPost("[action]")]
         public async Task<ActionResult> UploadUnPlacedPhoto(IFormFile uploadedFile, FileDataType dataType, int projectId, int taskId, string assignmentId)
         {
             string newfileId = Guid.NewGuid().ToString();
@@ -348,7 +355,7 @@ namespace DigitalCap.WebApi.Controllers
         }
 
 
-        [HttpPost]
+         [HttpPost("[action]")]
         public async Task<ActionResult> UpdateGenericImageDescriptionDropdownCard(int templateId, int projectId, Guid sectionId, int cardId, int value, string cardName)
         {
             var result = _surveyReportService.UpdateGenericImageDescriptionDropdownCard(templateId, projectId, sectionId, cardId, value, cardName);
@@ -356,21 +363,21 @@ namespace DigitalCap.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
+         [HttpPost("[action]")]
         public async Task<ActionResult> UpdateGenericAdditionalDescription(int templateId, int projectId, Guid sectionId, int cardId, string value, string cardName)
         {
             var result = _surveyReportService.UpdateGenericAdditionalDescription(templateId, projectId, sectionId, cardId, value, cardName);
             return Ok(result);
         }
 
-        [HttpPost]
+         [HttpPost("[action]")]
         public async Task<ActionResult> UpdateGenericCurrentCondition(int templateId, int projectId, Guid sectionId, int cardId, int value, string cardName)
         {
             var result = _surveyReportService.UpdateGenericCurrentCondition(templateId, projectId, sectionId, cardId, value, cardName);
             return Ok(result);
         }
 
-        [HttpPost]
+         [HttpPost("[action]")]
         public async Task<ActionResult> UploadGenericImage(IFormFile file, int templateId, int projectId, Guid sectionId, int cardId, int imageId, bool replaceImage = false, string cardName = null)
         {
             var result = _surveyReportService.UploadGenericImage(file, templateId, projectId, sectionId, cardId, imageId, replaceImage, cardName);
@@ -379,7 +386,7 @@ namespace DigitalCap.WebApi.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
+         [HttpPost("[action]")]
         public async Task<ActionResult> DeleteGenericImage(int templateId, int projectId, Guid sectionId, int cardId, int imageId)
         {
             var result = await _surveyReportService.DeleteGenericImage(templateId, projectId, sectionId, cardId, imageId);

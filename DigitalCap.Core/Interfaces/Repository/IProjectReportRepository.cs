@@ -10,5 +10,6 @@ namespace DigitalCap.Core.Interfaces.Repository
         Task<GenericImageCard> GetGenericImagCardByName(int projectId, int templateId, Guid sectionId, int cardNumber);
         Task<bool> UpdateGenericImageCard(GenericImageCard model);
         Task<bool> CreateGenericImageCard(GenericImageCard model);
+
     }
 }
