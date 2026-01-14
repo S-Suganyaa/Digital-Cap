@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DigitalCap.Core.Models.ImageDescription;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -9,10 +10,17 @@ namespace DigitalCap.Core.Models
         public bool IsSuccess { get; set; }
         public T Data { get; set; }
         public List<string> ErrorMessages { get; set; } = new List<string>();
+        public string Message { get; set; }
         public string ErrorCode { get; set; }
 
         // Convenience property to get the first error message
         public string ErrorMessage => ErrorMessages?.FirstOrDefault();
+        
+        public static ServiceResult<T> Ok(T data = default)
+           => new ServiceResult<T> { IsSuccess = true, Data = data };
+
+        public static ServiceResult<T> Fail(string message)
+            => new ServiceResult<T> { IsSuccess = false, Message = message };
 
         public static ServiceResult<T> Success(T data)
         {
@@ -29,6 +37,8 @@ namespace DigitalCap.Core.Models
             };
         }
 
+       
+
         public static ServiceResult<T> Failure(List<string> errorMessages, string errorCode = null)
         {
             return new ServiceResult<T>
@@ -38,6 +48,8 @@ namespace DigitalCap.Core.Models
                 ErrorCode = errorCode
             };
         }
+
+       
 
         // Method to add additional error messages
         public void AddError(string errorMessage)
@@ -51,6 +63,11 @@ namespace DigitalCap.Core.Models
         {
             ErrorMessages.AddRange(errorMessages);
             IsSuccess = false;
+        }
+
+        public ServiceResult<ImageDescriptions> Fail(string v)
+        {
+            throw new NotImplementedException();
         }
     }
 }

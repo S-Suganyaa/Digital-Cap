@@ -262,6 +262,39 @@ namespace DigitalCap.Core.Helpers.Constants
             public static readonly string GetAbsUsers = "sp_UserAccounts_GetAbsUsers";
             public static readonly string GetClientUsers = "sp_UserAccounts_GetClientUsers";
         }
+
+        public static class Grading
+        {
+            public static readonly string GetAllGrading = "dbo.GetAllGrading";
+            public static readonly string GetGradingTemplate = "dbo.GetGradingTemplate";
+            public static readonly string GetGradingSections = "dbo.GetGradingSections";
+            public static readonly string GetGradingSectionsByTemplateNameAndVesselType = "dbo.GetGradingSectionsByTemplateNameAndVesselType";
+            public static readonly string GetSectionGradings = "dbo.GetSectionGrading";
+            public static readonly string CreateSectionGrading = "dbo.CreateSectionGrading";
+            public static readonly string UpdateSectionGrading = "dbo.UpdateSectionGrading";
+            public static readonly string GetTemplateGradingbyImo = "dbo.GetTemplateSectionsGradingByImoNumber";
+            public static readonly string GetTemplateGradingbyVesselType = "dbo.GetTemplateSectionsGradingByVesselType";
+            public static readonly string GetDefaultTemplateGrading = "dbo.GetDefaultTemplateSectionGrading";
+            public static readonly string CreateTankGrading = "dbo.CreateTankGrading";
+            public static readonly string UpdateTankGrading = "dbo.UpdateTankGrading";
+            public static readonly string GetGradingByGradingId = "dbo.GetGradingByGradingId";
+            public static readonly string CreateProjectSectionGrading = "dbo.CreateProjectSectionGrading";
+            public static readonly string DeleteGrading = "dbo.DeleteGrading";
+        }
+
+        public static class ImageDescription
+        {
+            public static readonly string GetAllDescription = "dbo.GetAllDescription";
+            public static readonly string CreateImageDescription = "dbo.CreateImageDescription";
+            public static readonly string UpdateImageDescription = "dbo.UpdateImageDescription";
+            public static readonly string GetImageDescriptionById = "GetImageDescriptionById";
+            public static readonly string GetImageDescriptionsByProjectId = "GetImageDescriptionsByProjectId";
+            public static readonly string GetImageDescriptionsByVesselType = "GetImageDescriptionsByVesselType";
+            public static readonly string CreateProjectSectionImageDescriptions="CreateProjectSectionImageDescriptions";
+            public static readonly string GetDescriptionSectionsByTemplateNameAndVesselType = "GetDescriptionSectionsByTemplateNameAndVesselType";
+
+        }
+
     }
 
     public static class TableNames

@@ -2,13 +2,14 @@
 using DigitalCap.Core.Interfaces.Service;
 using DigitalCap.Core.Models.VesselModel;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Text;
+using System.Text.Json;
+
+using System.Text.Json.Serialization;
 
 namespace DigitalCap.Persistence.Repositories
 {
@@ -106,7 +107,7 @@ namespace DigitalCap.Persistence.Repositories
 
         public class CertificatesObject : IJsonContainer<Certificate>
         {
-            [JsonProperty("certificates")]
+            [JsonPropertyName("certificates")]
             public Certificate[] Certificates { get; set; }
 
             public IEnumerable<Certificate> Data { get => Certificates; }
@@ -169,8 +170,8 @@ namespace DigitalCap.Persistence.Repositories
             restRequest.AddParameter("response_type", "token");
             restRequest.AddParameter("scope", $"openid {_clientId}");
             RestResponse response = restClient.ExecutePostAsync(restRequest).Result;
-            var jObject = JObject.Parse(response.Content);
-            return jObject.GetValue("access_token").ToString();
+            var json = JsonDocument.Parse(response.Content);
+            return json.RootElement.GetProperty("access_token").GetString();
         }
     }
 }

@@ -1,3 +1,4 @@
+using Azure.Storage.Blobs;
 using DigitalCap.Core.Models;
 using DigitalCap.Infrastructure.DbContext;
 using DigitalCap.Persistence.Extensions;
@@ -34,6 +35,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
@@ -45,3 +47,10 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+builder.Services.AddSingleton(x =>
+    new BlobContainerClient(
+        connectionString: configuration["AzureBlob:ConnectionString"],
+        blobContainerName: configuration["AzureBlob:ContainerName"]
+    )
+);

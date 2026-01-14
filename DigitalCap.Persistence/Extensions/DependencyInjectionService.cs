@@ -1,13 +1,17 @@
-﻿using DigitalCap.Core.Interfaces.Repository;
+﻿using Microsoft.EntityFrameworkCore;
+using DigitalCap.Core.Interfaces.Repository;
 using DigitalCap.Core.Interfaces.Service;
 using DigitalCap.Core.Models;
 using DigitalCap.Infrastructure.Service;
 using DigitalCap.Persistence.Repositories;
-using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.SqlServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using DigitalCap.Infrastructure.DbContext;
 using System;
-using System.Collections.Generic;
+using System.Collections.Generic;   
+//using System.Data.Entity;
 using System.Text;
 
 namespace DigitalCap.Persistence.Extensions
@@ -17,10 +21,10 @@ namespace DigitalCap.Persistence.Extensions
         public static IServiceCollection AddPersistenceServices(this IServiceCollection services, IConfiguration configuration)
         {
 
-            // DbContext
-            //services.AddDbContext<AppDbContext>(options =>
-            //    options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
-            //);
+            
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+            );
 
             // UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -46,19 +50,26 @@ namespace DigitalCap.Persistence.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IVesselRepository, VesselRepository>();
             services.AddScoped<IProjectReportRepository, ProjectReportRepository>();
-            services.AddScoped<IUserAccountRepository, UserAccountRepository>();
-            services.AddScoped<IEmailRepository, EmailRepository>();
-            services.AddScoped<IPlatformUserRepository, PlatformUserRepository>();
+            services.AddScoped<IEmailRepository, EmailRepository>();           
+            services.AddScoped<ISecurityClientRepository, SecurityClientRepository>();
+
 
             //services.AddScoped<ISecurityClientRepository, SecurityClientRepository>();
 
-            services.AddHttpClient<IHttpService, HttpService>();
+
             // Services
+            services.AddHttpClient<IHttpService, HttpService>();
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<IGradingService, GradingService>();
             services.AddScoped<ISecurityService, SecurityService>();
             services.AddScoped<ISurveyReportService, SurveyReportService>();
             services.AddScoped<IVesselService, VesselService>();
+            
+            services.AddScoped<ISecurityClientService, SecurityClientService>();
+            services.AddScoped<IUserAccountService, UserAccountService>();
+            services.AddScoped<IPlatformUserService, PlatformUserService>();
+            services.AddScoped<IEmailService, EmailService>();
+
 
             //services.AddTransient(serviceProvider =>
             //{
@@ -69,11 +80,8 @@ namespace DigitalCap.Persistence.Extensions
             //    return new Func<ApplicationUser>(() => lazyResult.Value);
             //});
 
-            services.AddScoped<IUserAccountService, UserAccountService>();
-            //services.AddScoped<ISecurityService, SecurityService>();
-            services.AddScoped<ISecurityClientService, SecurityClientService>();
-            services.AddScoped<IPlatformUserService, PlatformUserService>();
-            services.AddScoped<IEmailService, EmailService>();
+            
+            
 
             return services;
         }
