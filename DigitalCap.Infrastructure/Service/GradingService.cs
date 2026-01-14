@@ -50,6 +50,7 @@ namespace DigitalCap.Infrastructure.Service
         }
 
 
+
         public async Task<List<Grading>> GetAllGradingsAsync()
                => await _gradingRepository.GetAllGradingAsync();
 
