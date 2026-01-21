@@ -1,4 +1,5 @@
-﻿using DigitalCap.Core.Models.ReportConfig;
+﻿using DigitalCap.Core.Models.ExportConfig;
+using DigitalCap.Core.Models.ReportConfig;
 using DigitalCap.Core.Models.Survey;
 using System;
 using System.Collections.Generic;
@@ -30,5 +31,9 @@ namespace DigitalCap.Core.Interfaces.Repository
         Task<List<ProjectGradingMapping>> GetH_IProjectGradingByProjectId(int projectId);
         Task<List<ProjectGradingConditionMapping>> GetHandIGradingConditionByProjectId(int projectId);
         Task<ProjectPart> GetProjectTemplateTitle(int partId, int projectId);
+        Task<List<ExportPart>> GetVesselTypeExportPartConfiguration(int vesseltypeId);
+        Task<List<ExportSections>> GetVesselTypeExportSectionConfiguration(int partId, int vesselTypeId);
+        Task<List<ExportPart>> GetProjectExportPartConfiguration(int projectId);
+        Task<List<ExportSections>> GetProjectExportSectionConfiguration(int partId, int projectId);
     }
 }

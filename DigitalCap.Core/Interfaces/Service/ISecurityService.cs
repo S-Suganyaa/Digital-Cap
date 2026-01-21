@@ -8,14 +8,19 @@ namespace DigitalCap.Core.Interfaces.Service
 {
     public interface ISecurityService
     {
-        //Task<ApplicationUser?> GetCurrentUserAsync();
-        //Task<ApplicationUser?> GetUserAsync(Guid userId);
-        //Task<IEnumerable<ApplicationUser>> GetAllUsersAsync();
-        //Task<IEnumerable<ApplicationUser>> GetClientUsersAsync();
-        //Task<IEnumerable<Permission>> GetPermissionsForRoleAsync(string role);
-        //Task<bool> UpdateRolesForUserAsync(Guid userId, IEnumerable<string> roles1, params string[] roles);
-        //Task<bool> UpdatePermissionsForUserAsync(Guid userId, params Permission[] permissions);
-        //Task<bool> ToggleUserIsEnabledAsync(Guid id, bool isEnabled);
+       // Task<ApplicationDto?> GetUser(Guid userId);
+        // Task<IEnumerable<ApplicationDto>> GetAllUsers();
+        // Task<IEnumerable<ApplicationDto>> GetClientUsers();
+        // Task<IEnumerable<Permission>> GetPermissionsForRole(string role);
+        Task<bool> UpdateRolesForUser(Guid userId, params string[] roles);
+        //  Task<bool> UpdatePermissionsForUser(Guid userId, params Permission[] permissions);
+
+
+        Task<bool> UpdatePermissionsForUser(Guid userId, params Permission[] permissions);
+
+        Task<bool> ToggleUserIsEnabled(Guid id, bool isEnabled);
         Task<ServiceResult<ApplicationDto>> GetCurrentUser();
+        IEnumerable<string> Roles { get; }
+        //Task<bool> UpdateRolesForUser(Guid userId, params string[] roles);
     }
 }

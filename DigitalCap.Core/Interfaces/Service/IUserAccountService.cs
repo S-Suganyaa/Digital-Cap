@@ -1,5 +1,6 @@
 ﻿using DigitalCap.Core.DTO;
 using DigitalCap.Core.Models;
+using DigitalCap.Core.Models.View.Admin;
 using DigitalCap.Core.Security;
 using DigitalCap.Core.ViewModels.AccountViewModels;
 using System;
@@ -10,45 +11,44 @@ namespace DigitalCap.Core.Interfaces.Service
 {
     public interface IUserAccountService
     {
-        //Task<LoginResult> LoginAsync(LoginViewModel model);
-        //Task LogoutAsync();
+        Task<ServiceResult<LoginResult>> LoginAsync(LoginViewModel model);
+        Task<ServiceResult<string>> LogoutAsync();
+        Task<ServiceResult<string>> ConfirmEmailAsync(string userId, string code);
+        Task<ServiceResult<string>> ForgotPasswordAsync(string email);
+        Task<ServiceResult<string>> ResetPasswordAsync(string email, string token, string newPassword);
+        Task<bool> AssignRolesAndPermissionsAsync(Guid userId, IEnumerable<string> roles, IEnumerable<string> permissions);
 
-        //Task<(bool Success, string Message)> ConfirmEmailAsync(string userId, string code);
-        //Task ForgotPasswordAsync(string email);
-        //Task ResetPasswordAsync(string email, string token, string newPassword);
+        Task<CreateAccountResponse> GetCreateAccountDataAsync();
+        Task<object?> GetEditAccountDataAsync();
 
-        //Task<ExternalLoginResult> ExternalLoginAsync(string? returnUrl, string? remoteError);
+        Task<IEnumerable<string>> GetUserPermissionsAsync(Guid userId);
+        Task<IEnumerable<string>> GetUserRolesAsync(Guid userId);
 
-        //Task<bool> AssignRolesAndPermissionsAsync(Guid userId,IEnumerable<string> roles,IEnumerable<string> permissions);
+        Task<Guid> CreateAccountAsync(CreateAccountRequest request);
+       // Task<Guid> EditAccountAsync(AccountViewModel model);
+        Task<ServiceResult<AccountViewModel>> EditAccount(AccountViewModel accountVM);
 
-        //Task<CreateAccountResponse> GetCreateAccountDataAsync();
-        //Task<object?> GetEditAccountDataAsync();
+        //Task<IEnumerable<ManagedUserResponse>> GetManagedUsersAsync();
 
-        //Task<IEnumerable<string>> GetUserPermissionsAsync(Guid userId);
-        //Task<IEnumerable<string>> GetUserRolesAsync(Guid userId);
+        //Task RequestAccessAsync(string email);
+        //Task ChangePasswordAsync(ChangePasswordRequest request);
 
-        //Task<Guid> CreateAccountAsync(CreateAccountRequest request);
-        //Task<Guid> EditAccountAsync(AccountViewModel model);
+        // Task<UserProfileResponse> GetProfileAsync();
+        // Task UpdateProfileAsync(EditProfileRequest request);
 
-        ////Task<IEnumerable<ManagedUserResponse>> GetManagedUsersAsync();
+        // Repository passthroughs
+        Task<UserAccountModel?> GetByAspNetIdAsync(string aspNetUserId);
+        Task<UserAccountModel?> GetByAspNetIdIncludingDeletedAsync(string aspNetUserId);
+        Task<IEnumerable<UserAccountModel>> GetUsersInRoleAsync(string roleName);
+        Task<IEnumerable<UserAccountModel>> GetUsersInRoleForClientAsync(string roleName, Guid clientId);
+        Task<IEnumerable<UserAccountModel>> GetUsersWithPermissionAsync(Permission permission);
+        Task<IEnumerable<CapUser>> GetAbsUsersAsync();
+        Task<IEnumerable<CapUser>> GetClientUsersAsync(string clientId);
 
-        ////Task RequestAccessAsync(string email);
-        ////Task ChangePasswordAsync(ChangePasswordRequest request);
-
-        //Task<UserProfileResponse> GetProfileAsync();
-        //Task UpdateProfileAsync(EditProfileRequest request);
-
-        //// Repository passthroughs
-        //Task<UserAccountModel?> GetByAspNetIdAsync(string aspNetUserId);
-        //Task<UserAccountModel?> GetByAspNetIdIncludingDeletedAsync(string aspNetUserId);
-        //Task<IEnumerable<UserAccountModel>> GetUsersInRoleAsync(string roleName);
-        //Task<IEnumerable<UserAccountModel>> GetUsersInRoleForClientAsync(string roleName, Guid clientId);
-        //Task<IEnumerable<UserAccountModel>> GetUsersWithPermissionAsync(Permission permission);
-        //Task<IEnumerable<CapUser>> GetAbsUsersAsync();
-        //Task<IEnumerable<CapUser>> GetClientUsersAsync(string clientId);
-
-        //Task<UserAccountModel> SaveAsync(UserAccountModel account);
-        ////Task<IEnumerable<UserAccountModel>> GetByAspNetIdActiveOrDeletedAsync(string id);
-        //Task CommitAsync();
+        Task<UserAccountModel> SaveAsync(UserAccountModel account);
+        //Task<IEnumerable<UserAccountModel>> GetByAspNetIdActiveOrDeletedAsync(string id);
+        Task CommitAsync();
+        Task<ServiceResult<string>> ExternalLoginAsync(string? returnUrl, string? remoteError);
+        Task RequestAccessAsync(string email);
     }
 }

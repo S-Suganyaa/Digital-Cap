@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using DigitalCap.Core.Interfaces.Repository;
+using DigitalCap.Core.Models.ExportConfig;
 using DigitalCap.Core.Models.ReportConfig;
 using DigitalCap.Core.Models.Survey;
 using DigitalCap.Core.Models.Tank;
@@ -656,6 +657,104 @@ namespace DigitalCap.Persistence.Repositories
             {
                 return null; // or throw / log
             }
+        }
+        public async Task<List<ExportPart>> GetVesselTypeExportPartConfiguration(int vesseltypeId)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                var result = await Connection.QueryAsync<ExportPart>(
+                   sql: "[config].[GetVesselTypeExportConfigForParts]",
+                   new
+                   {
+                       VesselTypeId = vesseltypeId,
+                   },
+                   commandType: CommandType.StoredProcedure,
+                   transaction: Transaction);
+
+                return result?.ToList();
+            }
+
+            catch (SqlException sqlEx)
+            {
+                //throw sqlEx;
+            }
+            return null;
+        }
+
+        public async Task<List<ExportSections>> GetVesselTypeExportSectionConfiguration(int partId, int vesselTypeId)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+
+                var result = await Connection.QueryAsync<ExportSections>(
+                   sql: "[config].[GetVesselTypeExportConfigForSections]",//[config].[GetVesselTypeExportConfigForSections]
+                   new
+                   {
+                       PartId = partId,
+                       VesselTypeId = vesselTypeId
+
+                   },
+                   commandType: CommandType.StoredProcedure,
+                   transaction: Transaction);
+
+                return result?.ToList();
+            }
+
+            catch (SqlException sqlEx)
+            {
+                //throw sqlEx;
+            }
+            return null;
+        }
+        public async Task<List<ExportPart>> GetProjectExportPartConfiguration(int projectId)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                var result = await Connection.QueryAsync<ExportPart>(
+                   sql: "config.GetProjectExportConfigForParts",// 
+                   new
+                   {
+                       Projectid = projectId,
+                   },
+                   commandType: CommandType.StoredProcedure,
+                   transaction: Transaction);
+
+                return result?.ToList();
+
+            }
+
+            catch (SqlException sqlEx)
+            {
+                //throw sqlEx;
+            }
+            return null;
+        }
+
+        public async Task<List<ExportSections>> GetProjectExportSectionConfiguration(int partId, int projectId)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                var result = await Connection.QueryAsync<ExportSections>(
+                   sql: "config.GetProjectExportConfigForSections",
+                   new
+                   {
+                       PartId = partId,
+                       ProjectId = projectId
+                   },
+                   commandType: CommandType.StoredProcedure,
+                   transaction: Transaction);
+
+                return result?.ToList();
+            }
+            catch (SqlException sqlEx)
+            {
+                //throw sqlEx;
+            }
+            return null;
         }
 
     }
