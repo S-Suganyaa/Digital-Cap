@@ -7,10 +7,10 @@ namespace DigitalCap.Core.DTO
 {
     public class CreateAccountRequest
     {
-        //public string Email { get; set; }
-        //public string Password { get; set; }
-        //public ApplicationUser AspNetUser { get; set; }
-        //public UserAccountModel UserAccount { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public ApplicationDto AspNetUser { get; set; }
+        public UserAccountModel UserAccount { get; set; }
     }
 
 }
