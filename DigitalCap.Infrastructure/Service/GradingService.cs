@@ -47,5 +47,76 @@ namespace DigitalCap.Infrastructure.Service
             }
         }
 
+        public async Task<List<Grading>> GetAllGradingsAsync()
+              => await _gradingRepository.GetAllGradingAsync();
+
+
+        public async Task<ServiceResult<bool>> CreateGradingAsync(GradingListViewModel model)
+        {
+
+            var dup = await _gradingRepository.CheckGradingNameExistsAsync(
+            model.VesselType, model.SectionName, model.TemplateName, model.GradingName);
+
+            if (dup.Any())
+                return ServiceResult<bool>.Fail("Grading name already exists");
+
+            var sections = await _gradingRepository.GetGradingSectionsByTemplateAndVesselAsync(
+            model.TemplateName, model.VesselType);
+
+            var section = sections.FirstOrDefault(s => s.SectionName == model.SectionName);
+
+            if (section == null)
+                return ServiceResult<bool>.Fail("Invalid section");
+
+            var grading = new Grading
+            {
+                GradingName = model.GradingName,
+                VesselType = model.VesselType,
+                SectionId = section.SectionId,
+                TanktypeId = section.TanktypeId,
+                IsActive = model.Status,
+                RequiredInReport = model.RequiredInReport
+            };
+
+            if (grading.TanktypeId == 0)
+                await _gradingRepository.CreateSectionGradingAsync(grading);
+            else
+                await _gradingRepository.CreateTankGradingAsync(grading);
+            return ServiceResult<bool>.Ok(true);
+        }
+
+
+        public async Task<ServiceResult<bool>> UpdateGradingAsync(GradingListViewModel model)
+        {
+            var all = await _gradingRepository.GetAllGradingAsync();
+            var grading = all.FirstOrDefault(x => x.GradingId == model.GradingId);
+
+            if (grading == null)
+                return ServiceResult<bool>.Fail("Grading not found");
+
+            var dup = await _gradingRepository.CheckGradingNameExistsAsync(
+            model.VesselType, model.SectionName, model.TemplateName, model.GradingName);
+
+            if (dup.Any(x => x.GradingId != model.GradingId))
+                return ServiceResult<bool>.Fail("Duplicate grading name");
+
+            grading.GradingName = model.GradingName;
+            grading.IsActive = model.Status;
+            grading.RequiredInReport = model.RequiredInReport;
+
+            if (grading.TanktypeId == 0)
+                await _gradingRepository.UpdateSectionGradingAsync(grading);
+            else
+                await _gradingRepository.UpdateTankGradingAsync(grading);
+            return ServiceResult<bool>.Ok(true);
+        }
+
+
+        public async Task<ServiceResult<bool>> DeleteGradingAsync(int gradingId, int tankId)
+        {
+            await _gradingRepository.DeleteGradingAsync(gradingId, tankId);
+            return ServiceResult<bool>.Ok(true);
+        }
+
     }
 }
