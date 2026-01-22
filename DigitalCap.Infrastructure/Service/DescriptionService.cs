@@ -26,6 +26,7 @@ namespace DigitalCap.Infrastructure.Service
         public async Task<ImageDescriptions> GetByIdAsync(int id)
             => await _descriptionRepository.GetImageDescriptionById(id);
 
+       
 
         public async Task<ServiceResult<ImageDescriptions>> CreateAsync(ImageDescriptions model)
         {

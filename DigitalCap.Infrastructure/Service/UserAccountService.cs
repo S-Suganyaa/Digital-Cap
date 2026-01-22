@@ -312,7 +312,7 @@ namespace DigitalCap.Infrastructure.Service
 
         public async Task<object?> GetEditAccountDataAsync()
         {
-            var user = await _securityService.GetCurrentUser();
+            var user = await _securityService.GetCurrentUserAsync();
             if (user == null) return null;
 
             return new
@@ -433,7 +433,7 @@ namespace DigitalCap.Infrastructure.Service
             _userAccountRepository.Commit();
 
             // 5️⃣ Permissions / Roles logic
-            var currentUserResult = await _securityService.GetCurrentUser();
+            var currentUserResult = await _securityService.GetCurrentUserAsync();
             //if (!currentUserResult.Succeeded)
             //    return Unauthorized();
 

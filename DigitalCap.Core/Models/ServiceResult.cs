@@ -15,6 +15,8 @@ namespace DigitalCap.Core.Models
         // Convenience property to get the first error message
         public string ErrorMessage => ErrorMessages?.FirstOrDefault();
 
+        public string UserName { get; set; }
+
         public static ServiceResult<T> Success(T data)
         {
             return new ServiceResult<T> { IsSuccess = true, Data = data };
@@ -55,6 +57,11 @@ namespace DigitalCap.Core.Models
         {
             ErrorMessages.AddRange(errorMessages);
             IsSuccess = false;
+        }
+
+        public static ServiceResult<List<Project>> Success(List<SelectListItem> selectListItems)
+        {
+            throw new NotImplementedException();
         }
     }
 }

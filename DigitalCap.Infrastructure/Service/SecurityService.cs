@@ -31,7 +31,7 @@ namespace DigitalCap.Infrastructure.Service
             _httpContextAccessor = httpContextAccessor;
             _userAccountRepository = userAccountRepository;
         }
-        public async Task<ServiceResult<ApplicationDto>> GetCurrentUser()
+        public async Task<ServiceResult<ApplicationDto>> GetCurrentUserAsync()
         {
             var claimsPrincipal = _httpContextAccessor.HttpContext?.User;
 
