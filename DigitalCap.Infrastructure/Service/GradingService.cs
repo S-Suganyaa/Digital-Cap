@@ -1,6 +1,8 @@
 ﻿using DigitalCap.Core.Interfaces.Repository;
 using DigitalCap.Core.Interfaces.Service;
 using DigitalCap.Core.Models;
+using DigitalCap.Core.Models.Grading;
+using DigitalCap.Core.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -58,7 +60,7 @@ namespace DigitalCap.Infrastructure.Service
             model.VesselType, model.SectionName, model.TemplateName, model.GradingName);
 
             if (dup.Any())
-                return ServiceResult<bool>.Fail("Grading name already exists");
+                return ServiceResult<bool>.Failure("Grading name already exists");
 
             var sections = await _gradingRepository.GetGradingSectionsByTemplateAndVesselAsync(
             model.TemplateName, model.VesselType);
@@ -66,7 +68,7 @@ namespace DigitalCap.Infrastructure.Service
             var section = sections.FirstOrDefault(s => s.SectionName == model.SectionName);
 
             if (section == null)
-                return ServiceResult<bool>.Fail("Invalid section");
+                return ServiceResult<bool>.Failure("Invalid section");
 
             var grading = new Grading
             {
@@ -92,13 +94,13 @@ namespace DigitalCap.Infrastructure.Service
             var grading = all.FirstOrDefault(x => x.GradingId == model.GradingId);
 
             if (grading == null)
-                return ServiceResult<bool>.Fail("Grading not found");
+                return ServiceResult<bool>.Failure("Grading not found");
 
             var dup = await _gradingRepository.CheckGradingNameExistsAsync(
             model.VesselType, model.SectionName, model.TemplateName, model.GradingName);
 
             if (dup.Any(x => x.GradingId != model.GradingId))
-                return ServiceResult<bool>.Fail("Duplicate grading name");
+                return ServiceResult<bool>.Failure("Duplicate grading name");
 
             grading.GradingName = model.GradingName;
             grading.IsActive = model.Status;
