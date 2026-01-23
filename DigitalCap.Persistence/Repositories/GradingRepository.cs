@@ -2,6 +2,8 @@
 using DigitalCap.Core.Interfaces.Repository;
 using DigitalCap.Core.Models.Grading;
 using DigitalCap.Core.Models.Tank;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -17,7 +19,7 @@ namespace DigitalCap.Persistence.Repositories
         protected IDbConnection Connection => _unitOfWork?.Connection!;
         protected IDbTransaction Transaction => _unitOfWork?.Transaction!;
 
-        public async Task<int> CreateProjectSectionGrading(int projectId,string vesselType)
+        public async Task<int> CreateProjectSectionGrading(int projectId, string vesselType)
         {
             return await Connection.ExecuteAsync(
                 sql: "[dbo].[CreateProjectSectionGrading]",
@@ -26,8 +28,9 @@ namespace DigitalCap.Persistence.Repositories
                     ProjectId = projectId,
                     VesselType = vesselType
                 },
-                transaction: Transaction,
-                commandType: CommandType.StoredProcedure);
+
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction);
         }
 
         public async Task<bool> CreateVessel_Grading(VesselTankGrading vesselTankGrading)
@@ -49,7 +52,8 @@ namespace DigitalCap.Persistence.Repositories
                 await Connection.ExecuteAsync(
                     sql: "dbo.Create_Vessel_Grading",
                     param: parameters,
-                    commandType: CommandType.StoredProcedure
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction
                 );
 
                 return true;
@@ -65,8 +69,8 @@ namespace DigitalCap.Persistence.Repositories
         {
             var result = await Connection.QueryAsync<Grading>(
             sql: "dbo.GetAllGrading",
-            transaction: Transaction,
-            commandType: CommandType.StoredProcedure);
+            commandType: CommandType.StoredProcedure,
+            transaction: Transaction);
 
             return result.ToList();
         }
@@ -76,8 +80,8 @@ namespace DigitalCap.Persistence.Repositories
             var result = await Connection.QueryAsync<GradingSection>(
             sql: "dbo.GetGradingSectionsByTemplateNameAndVesselType",
             param: new { TemplateName = templateName, VesselType = vesselType },
-            transaction: Transaction,
-            commandType: CommandType.StoredProcedure);
+                      commandType: CommandType.StoredProcedure,
+                      transaction: Transaction);
 
             return result.ToList();
         }
@@ -93,8 +97,9 @@ namespace DigitalCap.Persistence.Repositories
                 PartName = partName,
                 LabelName = labelName
             },
-            transaction: Transaction,
-            commandType: CommandType.StoredProcedure);
+
+            commandType: CommandType.StoredProcedure,
+            transaction: Transaction);
 
             return result.ToList();
         }
@@ -185,6 +190,70 @@ namespace DigitalCap.Persistence.Repositories
                 transaction: Transaction,
                 commandType: CommandType.StoredProcedure);
             return rows > 0;
+        }
+
+        public async Task<List<GradingTemplate>> GetGradingTemplatesByVesselType(string Vesseltype)
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<GradingTemplate>(
+                    sql: "dbo.GetGradingTemplate",
+                    new { VesselType = Vesseltype },
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction);
+
+                return result.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<GradingSection>> GetGradingSectionNamesByTemplateNameAndVesselType(string templateName, string vesseltype)
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<Core.Models.Grading.GradingSection>(
+                       sql: "dbo.GetGradingSectionsByTemplateNameAndVesselType",
+                        new
+                        {
+                            TemplateName = templateName,
+                            VesselType = vesseltype
+
+                        },
+                       commandType: CommandType.StoredProcedure, transaction: Transaction);
+
+                return result.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<GradingSection>> GetGradingSections(int templateId, string vesseltype)
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<Core.Models.Grading.GradingSection>(
+                    sql: "dbo.GetGradingSections",
+                     new
+                     {
+                         TemplateId = templateId,
+                         VesselType = vesseltype
+
+                     },
+                    commandType: CommandType.StoredProcedure, transaction: Transaction);
+
+                return result.ToList();
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 

@@ -2,7 +2,9 @@
 using DigitalCap.Core.Interfaces.Service;
 using DigitalCap.Core.Models;
 using DigitalCap.Core.Models.Grading;
+using DigitalCap.Core.Models.Survey;
 using DigitalCap.Core.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,8 +14,8 @@ namespace DigitalCap.Infrastructure.Service
     public class GradingService : IGradingService
     {
 
-        private readonly IGradingRepository _gradingRepository ;
-        private readonly ITankRepository _tankRepository ;
+        private readonly IGradingRepository _gradingRepository;
+        private readonly ITankRepository _tankRepository;
 
         public GradingService(IGradingRepository gradingRepository, ITankRepository tankRepository)
         {
@@ -49,9 +51,10 @@ namespace DigitalCap.Infrastructure.Service
             }
         }
 
-        public async Task<List<Grading>> GetAllGradingsAsync()
-              => await _gradingRepository.GetAllGradingAsync();
-
+        //public Task<ServiceResult<List<Core.Models.Grading.Grading>>> GetAllGradingsAsync()
+        //{
+        //    return _gradingRepository.GetAllGradingsAsync();
+        //}
 
         public async Task<ServiceResult<bool>> CreateGradingAsync(GradingListViewModel model)
         {
@@ -70,7 +73,7 @@ namespace DigitalCap.Infrastructure.Service
             if (section == null)
                 return ServiceResult<bool>.Failure("Invalid section");
 
-            var grading = new Grading
+            var grading = new Core.Models.Grading.Grading
             {
                 GradingName = model.GradingName,
                 VesselType = model.VesselType,
@@ -118,6 +121,50 @@ namespace DigitalCap.Infrastructure.Service
         {
             await _gradingRepository.DeleteGradingAsync(gradingId, tankId);
             return ServiceResult<bool>.Ok(true);
+        }
+
+        public async Task<ServiceResult<List<GradingTemplate>>> GetTemplateName([FromQuery] string vesselType = null)
+        {
+            try
+            {
+                var templates = await _gradingRepository.GetGradingTemplatesByVesselType(vesselType);
+                return ServiceResult<List<GradingTemplate>>.Success(templates);
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<List<GradingTemplate>>.Failure("Error retrieving templates");
+            }
+        }
+
+        public async Task<ServiceResult<List<GradingSection>>> GetSectionNameByTemplateNameAndVesselType(string templateName, string vesselType)
+        {
+            try
+            {
+                var sections = await _gradingRepository.GetGradingSectionNamesByTemplateNameAndVesselType(templateName, vesselType);
+                return ServiceResult<List<GradingSection>>.Success(sections);
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<List<GradingSection>>.Failure("Error retrieving sections");
+            }
+        }
+        public async Task<ServiceResult<List<GradingSection>>> GetGradingSections(int templateId, string vesselType)
+        {
+            try
+            {
+                var sections = await _gradingRepository.GetGradingSections(templateId, vesselType);
+                return ServiceResult<List<GradingSection>>.Success(sections);
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<List<GradingSection>>.Failure("Error retrieving sections");
+            }
+        }
+
+        public async Task<ServiceResult<List<Core.Models.Grading.Grading>>> GetAllGradingsAsync()
+        {
+            var all = await _gradingRepository.GetAllGradingAsync();
+            return ServiceResult<List<Core.Models.Grading.Grading>>.Success(all);
         }
 
     }
