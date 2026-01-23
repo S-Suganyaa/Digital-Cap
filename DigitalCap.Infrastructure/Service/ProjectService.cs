@@ -443,7 +443,7 @@ namespace DigitalCap.Infrastructure.Service
 
             if (!isElectron)
             {
-                var currentUserResult = await _securityService.GetCurrentUser();
+                var currentUserResult = await _securityService.GetCurrentUserAsync();
 
                 if (!currentUserResult.IsSuccess || currentUserResult.Data == null)
                 {
@@ -577,7 +577,7 @@ namespace DigitalCap.Infrastructure.Service
             if (isSync != null)
             {
                 var username = currentuser;
-                var currentUser = await _securityService.GetCurrentUser();
+                var currentUser = await _securityService.GetCurrentUserAsync();
                 UserAccountModel userAccount = await _userAccountRepository.GetByAspNetId(isSync.UserId);
                 if (userAccount != null)
                 {

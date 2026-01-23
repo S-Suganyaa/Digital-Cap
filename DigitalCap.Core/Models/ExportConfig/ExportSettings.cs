@@ -11,6 +11,7 @@ namespace DigitalCap.Core.Models.ExportConfig
         public string VesselType { get; set; }
         public List<VesselTypes> VesselTypes { get; set; }
         public List<ProjectImoNumber> imoNumbers { get; set; }
+        public List<string> ImoNumbers { get; set; }
         public int SelectedVesselTypeId { get; set; }
         public List<ExportPart> exportParts { get; set; }
 

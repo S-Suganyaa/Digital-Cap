@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using DigitalCap.Core.Interfaces.Repository;
+using DigitalCap.Core.Models.Grading;
 using DigitalCap.Core.Models.Tank;
 using System;
 using System.Collections.Generic;
@@ -60,5 +61,132 @@ namespace DigitalCap.Persistence.Repositories
             }
         }
 
+        public async Task<List<Grading>> GetAllGradingAsync()
+        {
+            var result = await Connection.QueryAsync<Grading>(
+            sql: "dbo.GetAllGrading",
+            transaction: Transaction,
+            commandType: CommandType.StoredProcedure);
+
+            return result.ToList();
+        }
+
+        public async Task<List<GradingSection>> GetGradingSectionsByTemplateAndVesselAsync(string templateName, string vesselType)
+        {
+            var result = await Connection.QueryAsync<GradingSection>(
+            sql: "dbo.GetGradingSectionsByTemplateNameAndVesselType",
+            param: new { TemplateName = templateName, VesselType = vesselType },
+            transaction: Transaction,
+            commandType: CommandType.StoredProcedure);
+
+            return result.ToList();
+        }
+
+        public async Task<List<Grading>> CheckGradingNameExistsAsync(string vesselType, string sectionName, string partName, string labelName)
+        {
+            var result = await Connection.QueryAsync<Grading>(
+            sql: "[Config].[CheckGradingNameExistsOrNot]",
+            param: new
+            {
+                VesselType = vesselType,
+                SectionName = sectionName,
+                PartName = partName,
+                LabelName = labelName
+            },
+            transaction: Transaction,
+            commandType: CommandType.StoredProcedure);
+
+            return result.ToList();
+        }
+
+        public async Task<bool> CreateTankGradingAsync(Grading grading)
+        {
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@VesselType", grading.VesselType);
+            parameters.Add("@GradingName", grading.GradingName);
+            parameters.Add("@IsActive", grading.IsActive);
+            parameters.Add("@TankTypeId", grading.TanktypeId);
+            parameters.Add("@ProjectId", grading.ProjectId);
+            parameters.Add("@RequiredInReport", grading.RequiredInReport);
+
+            var rows = await Connection.ExecuteAsync(
+                sql: "dbo.CreateTankGrading",
+                param: parameters,
+                transaction: Transaction,
+                commandType: CommandType.StoredProcedure);
+            return rows > 0;
+        }
+
+        public async Task<bool> CreateSectionGradingAsync(Grading grading)
+        {
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@LabelName", grading.GradingName);
+            parameters.Add("@IsActive", grading.IsActive);
+            parameters.Add("@VesselType", grading.VesselType);
+            parameters.Add("@SectionId", grading.SectionId);
+            parameters.Add("@ProjectId", grading.ProjectId);
+            parameters.Add("@RequiredInReport", grading.RequiredInReport);
+
+            var rows = await Connection.ExecuteAsync(
+                sql: "dbo.CreateSectionGrading",
+                param: parameters,
+                transaction: Transaction,
+                commandType: CommandType.StoredProcedure);
+            return rows > 0;
+        }
+
+        public async Task<bool> UpdateTankGradingAsync(Grading grading)
+        {
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@GradingId", grading.GradingId);
+            parameters.Add("@VesselType", grading.VesselType);
+            parameters.Add("@GradingName", grading.GradingName);
+            parameters.Add("@IsActive", grading.IsActive);
+            parameters.Add("@TankTypeId", grading.TanktypeId);
+            parameters.Add("@ProjectId", grading.ProjectId);
+            parameters.Add("@RequiredInReport", grading.RequiredInReport);
+
+            var rows = await Connection.ExecuteAsync(
+                sql: "dbo.UpdateTankGrading",
+                param: parameters,
+                transaction: Transaction,
+                commandType: CommandType.StoredProcedure);
+            return rows > 0;
+        }
+
+        public async Task<bool> UpdateSectionGradingAsync(Grading grading)
+        {
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@GradingId", grading.GradingId);
+            parameters.Add("@LabelName", grading.GradingName);
+            parameters.Add("@IsActive", grading.IsActive);
+            parameters.Add("@VesselType", grading.VesselType);
+            parameters.Add("@SectionId", grading.SectionId);
+            parameters.Add("@ProjectId", grading.ProjectId);
+            parameters.Add("@RequiredInReport", grading.RequiredInReport);
+
+            var rows = await Connection.ExecuteAsync(
+                sql: "dbo.UpdateSectionGrading",
+                param: parameters,
+                transaction: Transaction,
+                commandType: CommandType.StoredProcedure);
+            return rows > 0;
+        }
+
+        public async Task<bool> DeleteGradingAsync(int gradingId, int tankId)
+        {
+            var rows = await Connection.ExecuteAsync(
+                sql: "dbo.DeleteGrading",
+                param: new { GradingId = gradingId, TankId = tankId },
+                transaction: Transaction,
+                commandType: CommandType.StoredProcedure);
+            return rows > 0;
+        }
     }
+
 }
+

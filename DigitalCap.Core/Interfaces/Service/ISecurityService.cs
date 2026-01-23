@@ -19,7 +19,7 @@ namespace DigitalCap.Core.Interfaces.Service
         Task<bool> UpdatePermissionsForUser(Guid userId, params Permission[] permissions);
 
         Task<bool> ToggleUserIsEnabled(Guid id, bool isEnabled);
-        Task<ServiceResult<ApplicationDto>> GetCurrentUser();
+        Task<ServiceResult<ApplicationDto>> GetCurrentUserAsync();
         IEnumerable<string> Roles { get; }
         //Task<bool> UpdateRolesForUser(Guid userId, params string[] roles);
     }

@@ -405,7 +405,7 @@ namespace DigitalCap.Infrastructure.Service
                 Tanks = await _tankRepository.GetTanks_Vessel()
             };
 
-            var currentUser = await _securityService.GetCurrentUser();
+            var currentUser = await _securityService.GetCurrentUserAsync();
 
             if (currentUser.Data.IsABSAdministrator())
             {
