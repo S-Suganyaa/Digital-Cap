@@ -20,5 +20,12 @@ namespace DigitalCap.Core.Interfaces.Repository
         Task<List<GradingTemplate>> GetGradingTemplates();
         Task<List<GradingSection>> GetGradingSections(int templateId, string vesselType);
         Task<ImageDescriptions> GetImageDescriptionById(int id);
+
+        Task<IEnumerable<GradingSection>> GetSectionNamesByTemplateAndVesselAsync(string templateName, string vesselType);
+
+        
+        
     }
+
+
 }

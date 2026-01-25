@@ -19,5 +19,8 @@ namespace DigitalCap.Core.Interfaces.Repository
         Task<bool> UpdateTankGradingAsync(Grading grading);
         Task<bool> UpdateSectionGradingAsync(Grading grading);
         Task<bool> DeleteGradingAsync(int gradingId, int tankId);
+
+        Task<List<GradingTemplate>> GetGradingTemplates();
+        Task<IEnumerable<GradingSection>> GetGradingSections(int templateId, string vesselType);
     }
 }
