@@ -4,6 +4,7 @@ using DigitalCap.Core.Models.Grading;
 using DigitalCap.Core.Models.ImageDescription;
 using DigitalCap.Core.Models.ReportConfig;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -52,7 +53,7 @@ namespace DigitalCap.Persistence.Repositories
             return result.ToList();
         }
 
-        public async Task<bool> CreateImageDescription(ImageDescriptions entity)
+        public async Task<bool> CreateImageDescription(ImageDescriptions model)
         {
             try
             {
@@ -60,16 +61,16 @@ namespace DigitalCap.Persistence.Repositories
                     sql: "dbo.CreateImageDescription",
                     param: new
                     {
-                        entity.IsActive,
-                        entity.IsDeleted,
-                        entity.Description,
-                        entity.SectionId,
-                        entity.TankTypeId,
+                        model.IsActive,
+                        model.IsDeleted,
+                        model.Description,
+                        model.SectionId,
+                        model.TankTypeId,
                         CreatedDttm = DateTime.Now,
                         UpdatedDttm = DateTime.Now,
-                        entity.ProjectId,
-                        entity.CategoryId,
-                        entity.VesselType
+                        model.ProjectId,
+                        model.CategoryId,
+                        model.VesselType
                     },
                     transaction: Transaction,
                     commandType: CommandType.StoredProcedure);
@@ -83,7 +84,7 @@ namespace DigitalCap.Persistence.Repositories
         }
 
 
-        public async Task<bool> UpdateImageDescription(ImageDescriptions entity)
+        public async Task<bool> UpdateImageDescription(ImageDescriptions model)
         {
             try
             {
@@ -91,16 +92,16 @@ namespace DigitalCap.Persistence.Repositories
                     sql: "dbo.UpdateImageDescription",
                     param: new
                     {
-                        entity.Id,
-                        entity.IsActive,
-                        entity.IsDeleted,
-                        entity.Description,
-                        entity.SectionId,
-                        entity.TankTypeId,
+                        model.Id,
+                        model.IsActive,
+                        model.IsDeleted,
+                        model.Description,
+                        model.SectionId,
+                        model.TankTypeId,
                         UpdatedDttm = DateTime.Now,
-                        entity.ProjectId,
-                        entity.CategoryId,
-                        entity.VesselType
+                        model.ProjectId,
+                        model.CategoryId,
+                        model.VesselType
                     },
                     transaction: Transaction,
                     commandType: CommandType.StoredProcedure);
@@ -182,6 +183,8 @@ namespace DigitalCap.Persistence.Repositories
             return result.ToList();
         }
 
+
+
         public async Task<ImageDescriptions> GetImageDescriptionById(int id)
         {
             var result = await Connection.QueryAsync<ImageDescriptions>(
@@ -193,6 +196,22 @@ namespace DigitalCap.Persistence.Repositories
             return result.FirstOrDefault();
         }
 
+
+        public async Task<IEnumerable<GradingSection>>GetSectionNamesByTemplateAndVesselAsync(string templateName, string vesselType)
+        {
+           
+
+            var result = await Connection.QueryAsync<GradingSection>(
+            sql: "GetDescriptionSectionsByTemplateNameAndVesselType",
+            param: new
+            {
+                TemplateName = templateName,
+                VesselType = vesselType
+            },
+            commandType: CommandType.StoredProcedure);
+
+            return result;
+        }
 
     }
 }

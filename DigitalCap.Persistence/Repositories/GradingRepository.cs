@@ -182,6 +182,50 @@ namespace DigitalCap.Persistence.Repositories
             return rows > 0;
         }
 
+        public async Task<List<GradingTemplate>> GetGradingTemplates()
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<GradingTemplate>(
+                sql: "dbo.GetGradingTemplate",
+                commandType: CommandType.StoredProcedure,
+                transaction: Transaction
+          );
+
+                return result.ToList();
+            }
+            catch (Exception ex)
+            {
+                // optional: log exception
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<GradingSection>> GetGradingSections(int templateId, string vesselType)
+        {
+            try
+            {
+                var result = await Connection.QueryAsync<GradingSection>(
+                sql: "dbo.GetGradingSections",
+                param: new
+             {
+                TemplateId = templateId,
+                VesselType = vesselType
+             },
+            commandType: CommandType.StoredProcedure
+        );
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                // Optional: log exception
+                return Enumerable.Empty<GradingSection>();
+            }
+        }
+
+
+
         public async Task<bool> DeleteGradingAsync(int gradingId, int tankId)
         {
             var rows = await Connection.ExecuteAsync(
