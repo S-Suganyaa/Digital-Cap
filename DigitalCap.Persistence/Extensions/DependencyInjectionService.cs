@@ -54,8 +54,8 @@ namespace DigitalCap.Persistence.Extensions
 
 
             //services.AddScoped<ISecurityClientRepository, SecurityClientRepository>();
-
-            services.AddHttpClient<IHttpService, HttpService>();
+            services.AddHttpClient(); // Add this
+            services.AddScoped<IHttpService, HttpService>();
             // Services
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<IGradingService, GradingService>();

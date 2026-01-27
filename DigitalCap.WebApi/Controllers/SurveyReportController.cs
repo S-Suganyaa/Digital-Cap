@@ -7,6 +7,7 @@ using DigitalCap.Core.Models.Survey;
 using DigitalCap.Core.Models.Tank;
 using DigitalCap.Core.ViewModels;
 using DigitalCap.Infrastructure.Service;
+using DigitalCap.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Diagnostics;

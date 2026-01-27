@@ -3,6 +3,7 @@ using DigitalCap.Core.Interfaces.Service;
 using DigitalCap.Core.Models;
 using DigitalCap.Core.Models.ReportConfig;
 using DigitalCap.Infrastructure.Service;
+using DigitalCap.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DigitalCap.WebApi.Controllers
