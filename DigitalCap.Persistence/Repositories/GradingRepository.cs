@@ -205,31 +205,6 @@ namespace DigitalCap.Persistence.Repositories
             }
         }
 
-        public async Task<IEnumerable<GradingSection>> GetGradingSections(int templateId, string vesselType)
-        {
-            try
-            {
-                var result = await Connection.QueryAsync<GradingSection>(
-                sql: "dbo.GetGradingSections",
-                param: new
-             {
-                TemplateId = templateId,
-                VesselType = vesselType
-             },
-            commandType: CommandType.StoredProcedure
-        );
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                // Optional: log exception
-                return Enumerable.Empty<GradingSection>();
-            }
-        }
-
-
-
         public async Task<bool> DeleteGradingAsync(int gradingId, int tankId)
         {
             var rows = await Connection.ExecuteAsync(
@@ -292,7 +267,6 @@ namespace DigitalCap.Persistence.Repositories
                      {
                          TemplateId = templateId,
                          VesselType = vesseltype
-
                      },
                     commandType: CommandType.StoredProcedure, transaction: Transaction);
 
