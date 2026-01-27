@@ -1,4 +1,5 @@
-﻿using DigitalCap.Core.Models;
+﻿using DigitalCap.Core.DTO;
+using DigitalCap.Core.Models;
 using DigitalCap.Core.Models.Grading;
 using DigitalCap.Core.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,10 @@ namespace DigitalCap.Core.Interfaces.Service
         Task<ServiceResult<List<GradingSection>>> GetGradingSections(int templateId, string vesselType);
         Task<ServiceResult<List<GradingSection>>> GetSectionNameByTemplateNameAndVesselType(string templateName, string vesselType);
 
-
+        // New API methods
+        Task<ServiceResult<ManageGradingResponse>> ManageGradingAsync(string username, bool isActive, int gradingRestoreFilter, int searchGradingRestoreFilter);
+        Task<ServiceResult<bool>> SetManageGradingFiltersAsync(ManageGradingFilterRequest request);
+        Task<ServiceResult<GetGradingForAddResponse>> GetGradingForAddAsync(string username);
+        Task<ServiceResult<GetGradingForEditResponse>> GetGradingForEditAsync(int gradingId, Guid sectionId, int tankTypeId, string username);
     }
 }

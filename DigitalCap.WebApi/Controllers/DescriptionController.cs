@@ -75,6 +75,24 @@ namespace DigitalCap.WebApi.Controllers
             return result.IsSuccess ? Ok("Created") : BadRequest(result.Message);
         }
 
+        [HttpGet("AddDescription")]
+        public async Task<IActionResult> AddDescription()
+        {
+            var username = User.Identity?.Name ?? "";
+
+            var result = await _descriptionService.GetDescriptionForAddAsync(username);
+
+            if (!result.IsSuccess)
+            {
+                if (result.Message == "AccessDenied")
+                    return Forbid();
+
+                return BadRequest(result.Message);
+            }
+
+            return Ok(result.Data);
+        }
+
         [HttpPost("AddNewDescription")]
         public async Task<IActionResult> AddNewDescription(ImageDescriptionViewModel model)
         {
@@ -83,7 +101,7 @@ namespace DigitalCap.WebApi.Controllers
             if (!result.IsSuccess)
                 return BadRequest(result.Message ?? result.ErrorMessage);
 
-            return Ok(true);
+            return Ok(new { message = "Description created successfully", filter = 1, searchValue = 1 });
         }
 
         [HttpPut("EditDescription")]

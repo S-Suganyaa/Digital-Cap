@@ -1,4 +1,5 @@
-﻿using DigitalCap.Core.Models;
+﻿using DigitalCap.Core.DTO;
+using DigitalCap.Core.Models;
 using DigitalCap.Core.Models.Tank;
 using DigitalCap.Core.Models.VesselModel;
 using DigitalCap.Core.Models.View.Admin;
@@ -34,5 +35,14 @@ namespace DigitalCap.Core.Interfaces.Service
         Task<ServiceResult<List<IMOTankFilterModel>>> ManageTankFilter_Project(string IMO);
         Task<ServiceResult<List<Core.Models.View.Admin.Tank>>> DeleteTanks(Guid tankId, string IMO, int ProjectId);
         Task<ServiceResult<TanksViewModel>> ManageTankActiveCheckBox(string data, bool status, string IMO);
+
+        // New API methods
+        Task<ServiceResult<ManageTankResponse>> ManageTankAsync(string username, bool isActive, string imo, string projectId, int tankRestoreFilter, int searchRestoreFilter);
+        Task<ServiceResult<bool>> SetManageTankFiltersAsync(ManageTankFilterRequest request);
+        Task<ServiceResult<GetDataByIMOResponse>> GetDataByIMOAsync(string imo);
+        Task<ServiceResult<GetTankForAddResponse>> GetTankForAddAsync(string imo, string projectId, bool projectTanktype);
+        Task<ServiceResult<GetTankForEditResponse>> GetTankForEditAsync(Guid tankId, int projectId, string username);
+        Task<ServiceResult<bool>> CreateTankAsync(Core.Models.View.Admin.Tank model, string imo, string projectId, bool projectTanktype, string username);
+        Task<ServiceResult<bool>> UpdateTankAsync(Core.Models.View.Admin.Tank model, string imo, string projectId, string username);
     }
 }
