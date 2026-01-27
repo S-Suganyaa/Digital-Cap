@@ -22,5 +22,6 @@ namespace DigitalCap.Core.Interfaces.Repository
         Task<List<GradingTemplate>> GetGradingTemplatesByVesselType(string Vesseltype);
         Task<List<GradingSection>> GetGradingSectionNamesByTemplateNameAndVesselType(string templateName, string vesseltype);
         Task<List<GradingSection>> GetGradingSections(int templateId, string vesseltype);
+        Task<List<GradingTemplate>> GetGradingTemplates();
     }
 }
