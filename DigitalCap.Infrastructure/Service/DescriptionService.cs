@@ -107,6 +107,30 @@ namespace DigitalCap.Infrastructure.Service
             return ServiceResult<ImageDescriptions>.Success(model);
         }
 
+        public async Task<ServiceResult<GetDescriptionForAddResponse>> GetDescriptionForAddAsync(string username)
+        {
+            // Permission check
+            var permission = await _userPermissionRepository.GetRolePermissionByUserName(username,
+                EnumExtensions.GetDescription(ManagePages.ManageDescription));
+
+            if (permission?.Edit != true)
+                return ServiceResult<GetDescriptionForAddResponse>.Failure("AccessDenied");
+
+            // Load dropdown master data
+            var templates = await _gradingRepository.GetGradingTemplates();
+            var sections = await _gradingRepository.GetGradingSections(0, null);
+            var vesselTypes = await _tankRepository.GetShipType();
+
+            var response = new GetDescriptionForAddResponse
+            {
+                Templates = templates,
+                Sections = sections,
+                VesselTypes = vesselTypes
+            };
+
+            return ServiceResult<GetDescriptionForAddResponse>.Success(response);
+        }
+
         public async Task<ServiceResult<bool>> AddNewDescriptionAsync(ImageDescriptionViewModel model)
         {
             try
@@ -126,24 +150,34 @@ namespace DigitalCap.Infrastructure.Service
 
                 // Resolve Section + TankType
                 var sections = await _descriptionRepository
-            .GetDescriptionSectionNamesByTemplateNameAndVesselType(model.TemplateName, model.VesselType);
+                    .GetDescriptionSectionNamesByTemplateNameAndVesselType(model.TemplateName, model.VesselType);
+
+                if (sections == null || !sections.Any())
+                    return ServiceResult<bool>.Failure("Invalid Section");
 
                 var section = sections.FirstOrDefault(x => x.SectionName == model.SectionName);
 
                 if (section == null)
-                    return ServiceResult<bool>.Failure("Invalid Section");
+                    return ServiceResult<bool>.Failure("Please select valid Section");
 
-                //int sectionId = section.SectionId;
-                //int tankTypeId = section.TanktypeId;
+                // Set TankTypeId or SectionId based on TanktypeId
+                if (section.TanktypeId != 0)
+                {
+                    model.TankTypeId = section.TanktypeId;
+                }
+                else
+                {
+                    model.SectionId = section.SectionId;
+                }
 
                 // Duplicate Check
                 var existing = await _descriptionRepository.CheckImageDescriptionExistsOrNot(
-            model.VesselType,
-            model.SectionName,
-            model.TemplateName,
-            model.DescriptionName);
+                    model.VesselType,
+                    model.SectionName,
+                    model.TemplateName,
+                    model.DescriptionName);
 
-                if (existing.Any())
+                if (existing != null && existing.Any())
                     return ServiceResult<bool>.Failure("The description is already available in the section");
 
                 // Build Entity
@@ -164,7 +198,6 @@ namespace DigitalCap.Infrastructure.Service
             }
             catch (Exception ex)
             {
-                // optional logging
                 return ServiceResult<bool>.Failure("Internal server error");
             }
         }
@@ -222,12 +255,12 @@ namespace DigitalCap.Infrastructure.Service
 
             // Duplicate check
             var duplicates = await _descriptionRepository.CheckImageDescriptionExistsOrNot(
-            model.VesselType,
-            model.SectionName,
-            model.TemplateName,
-            model.DescriptionName);
+                model.VesselType,
+                model.SectionName,
+                model.TemplateName,
+                model.DescriptionName);
 
-            if (duplicates.Any(x => x.Id != model.Id))
+            if (duplicates != null && duplicates.Any(x => x.Id != model.Id))
                 return ServiceResult<bool>.Failure("The description already exists in this section");
 
             // Update entity
@@ -240,20 +273,20 @@ namespace DigitalCap.Infrastructure.Service
             return ServiceResult<bool>.Success(true);
         }
 
-        public async Task<ServiceResult<bool>> EditDescriptionByIdAsync(int id, string username)
+        public async Task<ServiceResult<GetDescriptionForEditResponse>> EditDescriptionByIdAsync(int id, string username)
         {
             // Permission check
             var permission = await _userPermissionRepository.GetRolePermissionByUserName(username,
-            EnumExtensions.GetDescription(ManagePages.ManageDescription));
+                EnumExtensions.GetDescription(ManagePages.ManageDescription));
 
             if (permission?.Edit != true)
-                return ServiceResult<bool>.Failure("AccessDenied");
+                return ServiceResult<GetDescriptionForEditResponse>.Failure("AccessDenied");
 
             // Get description entity
             var description = await _descriptionRepository.GetImageDescriptionById(id);
 
             if (description == null)
-                return ServiceResult<bool>.Failure("NotFound");
+                return ServiceResult<GetDescriptionForEditResponse>.Failure("NotFound");
 
             // Load dropdown master data
             var templates = await _gradingRepository.GetGradingTemplates();
@@ -261,7 +294,7 @@ namespace DigitalCap.Infrastructure.Service
             var vesselTypes = await _tankRepository.GetShipType();
 
             // Build response
-            var response = new 
+            var response = new GetDescriptionForEditResponse
             {
                 Id = description.Id,
                 TemplateName = description.TemplateName,
@@ -270,13 +303,12 @@ namespace DigitalCap.Infrastructure.Service
                 DescriptionName = description.Description,
                 TankTypeId = description.TankTypeId,
                 Status = description.IsActive,
-
                 Templates = templates,
                 Sections = sections,
                 VesselTypes = vesselTypes
             };
 
-            return ServiceResult<bool>.Success(true);
+            return ServiceResult<GetDescriptionForEditResponse>.Success(response);
         }
 
         public async Task<ServiceResult<List<string>>> GetDistinctVesselTypesAsync()
