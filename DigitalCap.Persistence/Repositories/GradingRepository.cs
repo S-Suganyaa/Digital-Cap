@@ -15,10 +15,14 @@ namespace DigitalCap.Persistence.Repositories
     public class GradingRepository : IGradingRepository
     {
 
+
         protected readonly IUnitOfWork _unitOfWork;
         protected IDbConnection Connection => _unitOfWork?.Connection!;
         protected IDbTransaction Transaction => _unitOfWork?.Transaction!;
-
+        public GradingRepository(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        }
         public async Task<int> CreateProjectSectionGrading(int projectId, string vesselType)
         {
             return await Connection.ExecuteAsync(

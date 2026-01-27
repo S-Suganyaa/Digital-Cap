@@ -1,9 +1,12 @@
 ﻿using DigitalCap.Core.Interfaces.Service;
+using DigitalCap.Core.Models;
 using DigitalCap.Core.Models.Grading;
 using DigitalCap.Core.Models.ImageDescription;
 using DigitalCap.Core.ViewModels;
 using DigitalCap.Infrastructure.Service;
+using DigitalCap.WebApi.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
@@ -64,7 +67,7 @@ namespace DigitalCap.WebApi.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<ActionResult> GetSectionName(int templateId,string vesselType)
+        public async Task<ActionResult> GetSectionName(int templateId, string vesselType)
         {
             try
             {
@@ -129,6 +132,45 @@ namespace DigitalCap.WebApi.Controllers
                 return BadRequest(result.Message);
 
             return Ok("Grading deleted successfully");
+        }
+
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> FilterMenuCustomization_Read([FromQuery] DataSourceRequest request)
+        {
+            try
+            {
+                var serviceResult = await _gradingService.GetAllGradingsAsync();
+
+                if (!serviceResult.IsSuccess)
+                {
+                    return BadRequest(serviceResult.Message);
+                }
+
+                var allData = serviceResult.Data;
+                var pagedData = allData;
+
+                // Apply pagination
+                if (request != null)
+                {
+                    if (request.Skip.HasValue && request.Take.HasValue)
+                    {
+                        pagedData = allData.Skip(request.Skip.Value).Take(request.Take.Value).ToList();
+                    }
+                    else if (request.Page.HasValue && request.PageSize.HasValue)
+                    {
+                        var skip = (request.Page.Value - 1) * request.PageSize.Value;
+                        pagedData = allData.Skip(skip).Take(request.PageSize.Value).ToList();
+                    }
+                }
+
+                // Return array directly (matching frontend expectation)
+                return Ok(pagedData);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error retrieving gradings", error = ex.Message });
+            }
         }
     }
 }

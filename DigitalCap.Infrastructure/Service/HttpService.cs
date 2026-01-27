@@ -19,8 +19,8 @@ namespace DigitalCap.Infrastructure.Service
         private readonly string _endpointUrl;
         private readonly string _clientId;
         private readonly string _subscriptionKey;
-
-        public HttpService(IConfiguration config)
+        private readonly IHttpClientFactory _httpClientFactory;
+        public HttpService(IConfiguration config, IHttpClientFactory httpClientFactory)
         {
             _username = config["FreedomUser"];
             _password = config["FreedomPw"];
@@ -28,7 +28,9 @@ namespace DigitalCap.Infrastructure.Service
             _endpointUrl = config["FreedomEndpointUrl"];
             _clientId = config["FreedomClientId"];
             _subscriptionKey = config["FreedomSubscriptionKey"];
+            _httpClientFactory = httpClientFactory;
         }
+
         public async Task<IEnumerable<TResult>> GetDataAsync<TContainer, TResult>(string clientUrl) where TContainer : IJsonContainer<TResult>
         {
 

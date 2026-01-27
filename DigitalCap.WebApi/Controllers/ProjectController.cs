@@ -6,6 +6,7 @@ using DigitalCap.Core.Models.Permissions;
 using DigitalCap.Core.Security;
 using DigitalCap.Core.ViewModels;
 using DigitalCap.Infrastructure.Service;
+using DigitalCap.WebApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

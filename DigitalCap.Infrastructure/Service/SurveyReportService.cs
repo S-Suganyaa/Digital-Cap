@@ -10,6 +10,7 @@ using DigitalCap.Core.Models.Survey;
 using DigitalCap.Core.Models.Tank;
 using DigitalCap.Core.ViewModels;
 using DigitalCap.Infrastructure.Service;
+using DigitalCap.WebApi.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

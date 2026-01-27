@@ -2,6 +2,7 @@
 using DigitalCap.Core.Models;
 using DigitalCap.Core.Models.Survey;
 using DigitalCap.Core.ViewModels;
+using DigitalCap.WebApi.Models;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
