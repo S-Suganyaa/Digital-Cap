@@ -1,5 +1,6 @@
 using DigitalCap.Core.Models.Tank;
 using DigitalCap.Core.Models.VesselModel;
+using DigitalCap.Core.Models.View.Admin;
 using System;
 using System.Collections.Generic;
 using System.Text;
