@@ -61,8 +61,20 @@ namespace DigitalCap.Infrastructure.Service
         //    return _gradingRepository.GetAllGradingsAsync();
         //}
 
-        public async Task<ServiceResult<bool>> CreateGradingAsync(Core.Models.Grading.Grading model)
+        public async Task<ServiceResult<bool>> CreateGradingAsync(GradingListViewModel model)
         {
+            // Validation
+            if (string.IsNullOrEmpty(model.VesselType))
+                return ServiceResult<bool>.Failure("Please select valid Vessel Type");
+
+            if (string.IsNullOrEmpty(model.GradingName))
+                return ServiceResult<bool>.Failure("Grading Name Required");
+
+            if (string.IsNullOrEmpty(model.TemplateName))
+                return ServiceResult<bool>.Failure("Please select valid Template Name");
+
+            if (string.IsNullOrEmpty(model.SectionName))
+                return ServiceResult<bool>.Failure("Please select valid Section Name");
 
             // Get sections by template and vessel type
             var sections = await _gradingRepository.GetGradingSectionNamesByTemplateNameAndVesselType(
@@ -83,15 +95,13 @@ namespace DigitalCap.Infrastructure.Service
             if (dup != null && dup.Any())
                 return ServiceResult<bool>.Failure("Grading Already Exist");
 
-
             var grading = new Core.Models.Grading.Grading
             {
                 GradingName = model.GradingName,
                 VesselType = model.VesselType,
                 SectionId = section.SectionId,
                 TanktypeId = section.TanktypeId,
-                IsActive = model.IsActive,
-                IsDeleted = false,
+                IsActive = model.Status,
                 RequiredInReport = model.RequiredInReport
             };
 
@@ -99,12 +109,12 @@ namespace DigitalCap.Infrastructure.Service
                 await _gradingRepository.CreateSectionGradingAsync(grading);
             else
                 await _gradingRepository.CreateTankGradingAsync(grading);
-
+            
             return ServiceResult<bool>.Ok(true);
         }
 
 
-        public async Task<ServiceResult<bool>> UpdateGradingAsync(Core.Models.Grading.Grading model)
+        public async Task<ServiceResult<bool>> UpdateGradingAsync(GradingListViewModel model)
         {
             // Validation
             if (string.IsNullOrEmpty(model.GradingName))
@@ -124,14 +134,14 @@ namespace DigitalCap.Infrastructure.Service
                 return ServiceResult<bool>.Failure("Grading Already Exist");
 
             grading.GradingName = model.GradingName;
-            grading.IsActive = model.IsActive;
+            grading.IsActive = model.Status;
             grading.RequiredInReport = model.RequiredInReport;
 
             if (grading.TanktypeId == 0)
                 await _gradingRepository.UpdateSectionGradingAsync(grading);
             else
                 await _gradingRepository.UpdateTankGradingAsync(grading);
-
+            
             return ServiceResult<bool>.Ok(true);
         }
 

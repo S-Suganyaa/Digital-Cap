@@ -10,25 +10,26 @@ namespace DigitalCap.Core.Models
     {
         public int? ID { get; set; }
 
-
+        [Required(ErrorMessage = "Please enter Project Name")]
         [Display(Name = "Project Name")]
         public string Name { get; set; }
 
-
+        [RegularExpression(@"[1-9]\d{6}", ErrorMessage = "Project ID must be 7 digits.")]
         [Display(Name = "Project ID")]
         public int? PIDNumber { get; set; }
 
-
+        [Required(ErrorMessage = "Please enter CAP Coordinator")]
         [Display(Name = "CAP Coordinator")]
         public string CapRegion { get; set; }
 
-
+        [Required(ErrorMessage = "Please enter CAP Scope")]
         [Display(Name = "CAP Scope")]
         public string CapScope { get; set; }
 
         [Display(Name = "Other")]
         public string CapScopeOther { get; set; }
 
+        [Required(ErrorMessage = "Please enter CAP Type")]
         [EnumDataType(typeof(CapType))]
         [Display(Name = "CAP Type")]
         public CapType CapType { get; set; }
@@ -68,6 +69,7 @@ namespace DigitalCap.Core.Models
 
         public bool SpecialHull { get; set; } = true;
 
+        [Required]
         public bool Fatigue { get; set; } = true;
 
         [RegularExpression(@"\d\d?", ErrorMessage = "Expense Markup must be one or two digits.")]
@@ -85,14 +87,17 @@ namespace DigitalCap.Core.Models
         [DataType(DataType.Currency)]
         public decimal? SedRate2 { get; set; }
 
+        [Required(ErrorMessage = "Please enter CAP Contract Value")]
         [DataType(DataType.Currency)]
         [Display(Name = "CAP Contract Value")]
         public decimal? CapContractValue { get; set; }
 
+        [Required(ErrorMessage = "Please enter Agreement / Bid Number")]
         [RegularExpression(@"[a-zA-Z0-9]+", ErrorMessage = "Bid number must be alphanumeric.")]
         [Display(Name = "Agreement / Bid Number")]
         public string AgreementNumber { get; set; }
 
+        [Required(ErrorMessage = "Please enter Proposal Rev. No.")]
         [RegularExpression(@"\d\d?", ErrorMessage = "Proposal Rev. must be one or two digits.")]
         [Display(Name = "Proposal Rev. No.")]
         public int? ProposalRev { get; set; }
@@ -101,11 +106,13 @@ namespace DigitalCap.Core.Models
         [Display(Name = "Agreement Owner")]
         public string AgreementOwner { get; set; }
 
+        [Required(ErrorMessage = "Please enter Agreement Submitted Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{mm-dd-yyyy}")]
         [Display(Name = DisplayNames.Agreement.Date)]
         public DateTime? AgreementDate { get; set; }
 
+        [Required(ErrorMessage = "Please enter Agreement Signed Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{mm-dd-yyyy}")]
         [Display(Name = DisplayNames.Agreement.SignedDate)]
@@ -115,9 +122,11 @@ namespace DigitalCap.Core.Models
 
         public string ProjectComments { get; set; }
 
+        [Required(ErrorMessage = "Please enter Company Name")]
         [Display(Name = "Company Name")]
         public string CompanyName { get; set; }
 
+        [Required(ErrorMessage = "Please enter Company Address")]
         [Display(Name = "Company Address")]
         public string CompanyAddress { get; set; }
 
@@ -129,6 +138,7 @@ namespace DigitalCap.Core.Models
         [Display(Name = "Company Billing System URL")]
         public string CompanyBillingSystemUrl { get; set; }
 
+        [Required]
         [Display(Name = "Same as Contract Client?")]
         public bool BillSameAsCapClient { get; set; } = true;
 
@@ -161,9 +171,11 @@ namespace DigitalCap.Core.Models
         [Display(Name = "IMO Number")]
         public int? IMO { get; set; }
 
+        [Required(ErrorMessage = "Please enter Vessel Name")]
         [Display(Name = "Vessel Name")]
         public string VesselName { get; set; }
 
+        [Required(ErrorMessage = "Please enter Ship Type")]
         [EnumDataType(typeof(ShipType))]
         [Display(Name = "Ship Type")]
         public ShipType ShipType { get; set; }
@@ -175,12 +187,15 @@ namespace DigitalCap.Core.Models
         [Display(Name = "Contract Client Profile")]
         public Guid? BillToClientProfileId { get; set; }
 
+        [RegularExpression(@"\d{6}", ErrorMessage = "WCN must be six digits.")]
         [Display(Name = "WCN Number")]
         public string WCN { get; set; }
 
+        [RegularExpression(@"\d{6}", ErrorMessage = "WCN must be six digits.")]
         [Display(Name = "WCN Number")]
         public string BillToWCN { get; set; }
 
+        [Required(ErrorMessage = "Please enter Classification")]
         [Display(Name = "Classification")]
         public string[] ClassSociety { get; set; }
 
@@ -190,6 +205,7 @@ namespace DigitalCap.Core.Models
         [Display(Name = "ABS Class Number")]
         public string AbsClassID { get; set; }
 
+        [Required]
         [Display(Name = "Does a Contract Sister Exist?")]
         public bool SisterVessel { get; set; } = false;
 

@@ -8,7 +8,6 @@ using DigitalCap.Core.Models.View.Admin;
 using DigitalCap.Core.ViewModels;
 using DigitalCap.Infrastructure.Service;
 using DigitalCap.Persistence.Repositories;
-using DigitalCap.WebApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Any;
@@ -131,118 +130,86 @@ namespace DigitalCap.WebApi.Controllers
             return Ok(result);
         }
 
+        //[HttpGet("[action]")] ----------****** DOUBT  ******------
+        //public async Task<IActionResult> FilterMenuCustomization_Read([FromBody] DataSourceRequest request)
+        //{
+        //    var result = _tankService.FilterMenuCustomization_Read(request);
+        //    return Ok(result);
+        //}
+
         [HttpGet("[action]")]
-        public async Task<IActionResult> FilterMenuCustomization_Read([FromQuery] DataSourceRequest request)
+        public async Task<IActionResult> ManageTankFilter_TankName(string IMO)
         {
-            try
-            {
-                var serviceResult = await _tankService.FilterMenuCustomization_Read();
+            var result = _tankService.ManageTankFilter_TankName(IMO);
+            return Ok(result);
+        }
 
-                if (!serviceResult.IsSuccess)
-                {
-                    return BadRequest(serviceResult.Message);
-                }
 
-                var allData = serviceResult.Data;
-                var pagedData = allData;
 
-                // Apply pagination
-                if (request != null)
-                {
-                    if (request.Skip.HasValue && request.Take.HasValue)
-                    {
-                        pagedData = allData.Skip(request.Skip.Value).Take(request.Take.Value).ToList();
-                    }
-                    else if (request.Page.HasValue && request.PageSize.HasValue)
-                    {
-                        var skip = (request.Page.Value - 1) * request.PageSize.Value;
-                        pagedData = allData.Skip(skip).Take(request.PageSize.Value).ToList();
-                    }
-                }
-
-                // Return array directly (matching frontend expectation)
-                return Ok(pagedData);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Error retrieving tanks", error = ex.Message });
-            }
+        [HttpGet("[action]")]
+        public async Task<IActionResult> ManageTankFilter_VesselType(string IMO)
+        {
+            var result = _tankService.ManageTankFilter_VesselType(IMO);
+            return Ok(result);
         }
 
 
         [HttpGet("[action]")]
-            public async Task<IActionResult> ManageTankFilter_TankName(string IMO)
-            {
-                var result = _tankService.ManageTankFilter_TankName(IMO);
-                return Ok(result);
-            }
-
-
-
-            [HttpGet("[action]")]
-            public async Task<IActionResult> ManageTankFilter_VesselType(string IMO)
-            {
-                var result = _tankService.ManageTankFilter_VesselType(IMO);
-                return Ok(result);
-            }
-
-
-            [HttpGet("[action]")]
-            public async Task<IActionResult> ManageTankFilter_VesselName(string IMO)
-            {
-                var result = _tankService.ManageTankFilter_VesselName(IMO);
-                return Ok(result);
-            }
-
-
-
-            [HttpGet("[action]")]
-            public async Task<IActionResult> ManageTankFilter_IMONumber(string IMO)
-            {
-                var result = _tankService.ManageTankFilter_IMONumber(IMO);
-                return Ok(result);
-            }
-
-
-            [HttpGet("[action]")]
-            public async Task<IActionResult> ManageTankFilter_TankType(string IMO)
-            {
-                var result = _tankService.ManageTankFilter_TankType(IMO);
-                return Ok(result);
-            }
-            [HttpGet("[action]")]
-            public async Task<IActionResult> ManageTankFilter_Project(string IMO)
-            {
-                var result = _tankService.ManageTankFilter_VesselName(IMO);
-                return Ok(result);
-            }
-
-            [HttpPost("[action]")]
-            public async Task<IActionResult> ManageTankActiveCheckBox(string data, bool status, string IMO)
-            {
-                var result = _tankService.ManageTankActiveCheckBox(data, status, IMO);
-
-                return Ok(result);
-            }
-            [HttpGet("[action]")]
-            public async Task<IActionResult> ManageTankInActiveCheckBox()
-            {
-                var data = new
-                {
-                    status = "Inactive"
-                };
-
-                return Ok("Inactive");
-            }
-
-            [HttpGet("[action]")]
-            public async Task<IActionResult> DeleteTanks(Guid tankId, string IMO, int ProjectId)
-            {
-                var result = _tankService.DeleteTanks(tankId, IMO, ProjectId);
-
-                return Ok(result);
-            }
-
-
+        public async Task<IActionResult> ManageTankFilter_VesselName(string IMO)
+        {
+            var result = _tankService.ManageTankFilter_VesselName(IMO);
+            return Ok(result);
         }
+
+
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> ManageTankFilter_IMONumber(string IMO)
+        {
+            var result = _tankService.ManageTankFilter_IMONumber(IMO);
+            return Ok(result);
+        }
+
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> ManageTankFilter_TankType(string IMO)
+        {
+            var result = _tankService.ManageTankFilter_TankType(IMO);
+            return Ok(result);
+        }
+        [HttpGet("[action]")]
+        public async Task<IActionResult> ManageTankFilter_Project(string IMO)
+        {
+            var result = _tankService.ManageTankFilter_VesselName(IMO);
+            return Ok(result);
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> ManageTankActiveCheckBox(string data, bool status, string IMO)
+        {
+            var result = _tankService.ManageTankActiveCheckBox(data, status, IMO);
+
+            return Ok(result);
+        }
+        [HttpGet("[action]")]
+        public async Task<IActionResult> ManageTankInActiveCheckBox()
+        {
+            var data = new
+            {
+                status = "Inactive"
+            };
+
+            return Ok("Inactive");
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> DeleteTanks(Guid tankId, string IMO, int ProjectId)
+        {
+            var result = _tankService.DeleteTanks(tankId, IMO, ProjectId);
+
+            return Ok(result);
+        }
+
+
     }
+}

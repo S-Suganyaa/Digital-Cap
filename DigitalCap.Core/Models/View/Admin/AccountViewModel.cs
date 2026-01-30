@@ -6,21 +6,35 @@ using System.Text;
 
 namespace DigitalCap.Core.Models.View.Admin
 {
-    public class AccountViewModel 
+    public class AccountViewModel : IValidatableObject
     {
         public UserAccountModel UserAccount { get; set; }
         public string AspNetUser { get; set; }
         public List<ClientModel> Clients { get; set; }
+
         public string Password { get; set; }
         public string ConfirmPassword { get; set; }
 
         public string Id { get; set; }
+
+        [Required]
+        [Display(Name = "First Name")]
         public string FirstName => UserAccount?.FirstName;
+
+        [Required]
+        [Display(Name = "Last Name")]
         public string LastName => UserAccount?.LastName;
+
+        [Required]
+        [Display(Name = "Email Address")]
+
         public string Email { get; set; }
         public bool IsEnabled { get; set; }
         public string DisplayRole { get; set; }
         public string Phone => UserAccount?.Phone;
+
+        [Required]
+        [Display(Name = "Time Zone")]
         public string TimeZone => UserAccount?.TimeZone;
 
         public string Company { get; set; }
@@ -35,6 +49,9 @@ namespace DigitalCap.Core.Models.View.Admin
         public bool AbsUser { get; set; }
         public bool ClientUser { get; set; }
         public bool NewUser { get; set; }
+
+        [Display(Name = "User Role")]
+        [Required]
         public string UpdatedRole { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

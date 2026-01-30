@@ -34,8 +34,12 @@ namespace DigitalCap.Core.ViewModels
         public Guid SectionId { get; set; }
 
         public string SectionName { get; set; }
+
+
+
         public string DescriptionName { get; set; }
 
+        [Required]
         [HiddenInput(DisplayValue = true)]
         public bool Status { get; set; } = true;
 

@@ -1,6 +1,5 @@
 ﻿using DigitalCap.Core.DTO;
 using DigitalCap.Core.Interfaces.Service;
-using DigitalCap.Core.Models.Grading;
 using DigitalCap.Core.Models.View.Admin;
 using DigitalCap.Core.ViewModels;
 using Microsoft.AspNetCore.Http;
@@ -91,8 +90,11 @@ namespace DigitalCap.WebApi.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> AddNewGrading([FromBody] Grading model)
+        public async Task<IActionResult> AddNewGrading([FromBody] GradingListViewModel model)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var result = await _gradingService.CreateGradingAsync(model);
 
             if (!result.IsSuccess)
@@ -102,7 +104,7 @@ namespace DigitalCap.WebApi.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> EditGrading([FromBody] Grading model)
+        public async Task<IActionResult> EditGrading([FromBody] GradingListViewModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
