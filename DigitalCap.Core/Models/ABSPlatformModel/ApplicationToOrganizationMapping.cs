@@ -8,10 +8,10 @@ namespace DigitalCap.Core.Models.ABSPlatformModel
     public class ApplicationToOrganizationMapping
     {
         public string Id { get; set; }
-        [Required]
+       
         [Display(Name = "Organization")]
         public string Organization { get; set; }
-        [Required]
+        
         [Display(Name = "Application")]
         public string Application { get; set; }
     }

@@ -556,7 +556,7 @@ namespace DigitalCap.Persistence.Repositories
             {
 
                 var result = await Connection.QueryAsync<Core.Models.View.Admin.Tank>(
-                    sql: "dbo.Get_Vessel_Tank_ById",
+                    sql: "dbo.Get_Vessel_Tank",
                     new
                     {
                         username = username,

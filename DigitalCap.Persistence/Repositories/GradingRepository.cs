@@ -23,6 +23,10 @@ namespace DigitalCap.Persistence.Repositories
         {
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
+        public void Commit()
+        {
+            _unitOfWork?.Commit();
+        }
         public async Task<int> CreateProjectSectionGrading(int projectId, string vesselType)
         {
             return await Connection.ExecuteAsync(
@@ -133,6 +137,7 @@ namespace DigitalCap.Persistence.Repositories
 
             parameters.Add("@LabelName", grading.GradingName);
             parameters.Add("@IsActive", grading.IsActive);
+            parameters.Add("@IsDeleted", grading.IsDeleted);
             parameters.Add("@VesselType", grading.VesselType);
             parameters.Add("@SectionId", grading.SectionId);
             parameters.Add("@ProjectId", grading.ProjectId);
@@ -143,6 +148,7 @@ namespace DigitalCap.Persistence.Repositories
                 param: parameters,
                 transaction: Transaction,
                 commandType: CommandType.StoredProcedure);
+            this.Commit();
             return rows > 0;
         }
 
@@ -163,6 +169,7 @@ namespace DigitalCap.Persistence.Repositories
                 param: parameters,
                 transaction: Transaction,
                 commandType: CommandType.StoredProcedure);
+            this.Commit();
             return rows > 0;
         }
 
@@ -175,6 +182,7 @@ namespace DigitalCap.Persistence.Repositories
             parameters.Add("@IsActive", grading.IsActive);
             parameters.Add("@VesselType", grading.VesselType);
             parameters.Add("@SectionId", grading.SectionId);
+            parameters.Add("@IsDeleted", grading.IsDeleted);
             parameters.Add("@ProjectId", grading.ProjectId);
             parameters.Add("@RequiredInReport", grading.RequiredInReport);
 
@@ -183,6 +191,7 @@ namespace DigitalCap.Persistence.Repositories
                 param: parameters,
                 transaction: Transaction,
                 commandType: CommandType.StoredProcedure);
+            this.Commit();
             return rows > 0;
         }
 
@@ -212,6 +221,7 @@ namespace DigitalCap.Persistence.Repositories
                 param: new { GradingId = gradingId, TankId = tankId },
                 transaction: Transaction,
                 commandType: CommandType.StoredProcedure);
+            this.Commit();
             return rows > 0;
         }
 

@@ -9,7 +9,7 @@ namespace DigitalCap.Core.Models.ABSPlatformModel
     {
         [Key]
         public string Id { get; set; }
-        [Required]
+       
         [Display(Name = "Submitted By")]
         public string SubmittedBy { get; set; }
         [Display(Name = "Submitted On")]

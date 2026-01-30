@@ -99,7 +99,7 @@ namespace DigitalCap.WebApi.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> CreateGrading([FromBody] GradingListViewModel model)
+        public async Task<IActionResult> CreateGrading([FromBody] Grading model)
         {
             var result = await _gradingService.CreateGradingAsync(model);
 
@@ -111,7 +111,7 @@ namespace DigitalCap.WebApi.Controllers
 
 
         [HttpPut("[action]")]
-        public async Task<IActionResult> UpdateGrading(int id, [FromBody] GradingListViewModel model)
+        public async Task<IActionResult> UpdateGrading(int id, [FromBody] Grading model)
         {
             model.GradingId = id;
 

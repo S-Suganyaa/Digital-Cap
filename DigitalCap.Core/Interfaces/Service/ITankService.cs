@@ -44,5 +44,6 @@ namespace DigitalCap.Core.Interfaces.Service
         Task<ServiceResult<GetTankForEditResponse>> GetTankForEditAsync(Guid tankId, int projectId, string username);
         Task<ServiceResult<bool>> CreateTankAsync(Core.Models.View.Admin.Tank model, string imo, string projectId, bool projectTanktype, string username);
         Task<ServiceResult<bool>> UpdateTankAsync(Core.Models.View.Admin.Tank model, string imo, string projectId, string username);
+        Task<ServiceResult<List<Core.Models.View.Admin.Tank>>> FilterMenuCustomization_Read();
     }
 }

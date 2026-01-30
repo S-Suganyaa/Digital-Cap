@@ -336,11 +336,12 @@ namespace DigitalCap.Infrastructure.Service
             vesseltypes = _tankRepository.GetVesselTypeList().Result;
             return ServiceResult<List<VesselTankDetails>>.Success(vesseltypes);
         }
-
-        //public async Task<JsonResult> FilterMenuCustomization_Read(DataSourceRequest request)
-        //{
-        //    return Json(_tankRepository.GetTanks_Vessel().Result.ToDataSourceResult(request), new JsonSerializerOptions { PropertyNamingPolicy = null });
-        //}
+        public async Task<ServiceResult<List<Core.Models.View.Admin.Tank>>> FilterMenuCustomization_Read()
+        {
+            var all = await _tankRepository.GetTanks_Vessel();
+            return ServiceResult<List<Core.Models.View.Admin.Tank>>.Success(all);
+        }
+     
         public async Task<ServiceResult<List<string>>> ManageTankFilter_TankName(string IMO)
         {
             var tanks = await _tankRepository.GetTanks_Vessel();
