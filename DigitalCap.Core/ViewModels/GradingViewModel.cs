@@ -22,15 +22,10 @@ namespace DigitalCap.Core.ViewModels
             Status = Active;
         }
         public int Id { get; set; }
-        [Display(Name = "Part Name")]
         public string TemplateName { get; set; }
-        [Display(Name = "Vessel Template")]
         public string VesselType { get; set; }
         public string SectionName { get; set; }
         public string GradingName { get; set; }
-
-        [Required]
-
         public bool Status { get; set; } = true;
 
         public int CategoryId { get; set; }

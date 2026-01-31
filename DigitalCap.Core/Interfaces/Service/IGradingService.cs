@@ -14,8 +14,8 @@ namespace DigitalCap.Core.Interfaces.Service
         Task<ServiceResult<bool>> PopulateGrading(string vesselType, int projectId);
 
         Task<ServiceResult<List<Core.Models.Grading.Grading>>> GetAllGradingsAsync();
-        Task<ServiceResult<bool>> CreateGradingAsync(GradingListViewModel model);
-        Task<ServiceResult<bool>> UpdateGradingAsync(GradingListViewModel model);
+        Task<ServiceResult<bool>> CreateGradingAsync(Grading model);
+        Task<ServiceResult<bool>> UpdateGradingAsync(Grading model);
         Task<ServiceResult<bool>> DeleteGradingAsync(int gradingId, int tankId);
         Task<ServiceResult<List<GradingTemplate>>> GetTemplateName([FromQuery] string vesselType = null);
         Task<ServiceResult<List<GradingSection>>> GetGradingSections(int templateId, string vesselType);
