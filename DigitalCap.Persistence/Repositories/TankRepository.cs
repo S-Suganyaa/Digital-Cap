@@ -194,27 +194,27 @@ namespace DigitalCap.Persistence.Repositories
             {
                 var parameters = new DynamicParameters();
 
-                parameters.Add("@VesselName", vesselTank.VesselName);
+                parameters.Add("@Id", vesselTank.Id);
                 parameters.Add("@VesselType", vesselTank.VesselType);
-                parameters.Add("@TankName", vesselTank.TankName);
-                parameters.Add("@Subheader", vesselTank.Subheader);
-                parameters.Add("@TankTypeId", vesselTank.TankTypeId);
                 parameters.Add("@ImoNumber", vesselTank.ImoNumber);
+                parameters.Add("@TankTypeId", vesselTank.TankTypeId);
+                parameters.Add("@TankName", vesselTank.TankName);
                 parameters.Add("@IsActive", vesselTank.IsActive);
-                parameters.Add("@IsDeleted", vesselTank.IsDeleted);
                 parameters.Add("@CreatedDttm", vesselTank.CreatedDttm);
                 parameters.Add("@UpdateDttm", vesselTank.UpdateDttm);
-                parameters.Add("@TemplateId", vesselTank.TemplateId);
+                parameters.Add("@IsDeleted", vesselTank.IsDeleted);
+                parameters.Add("@Subheader", vesselTank.Subheader);
                 parameters.Add("@RequiredInReport", vesselTank.RequiredInReport);
                 parameters.Add("@ProjectId", vesselTank.ProjectId);
 
                 await Connection.ExecuteAsync(
-                            sql: "dbo.Create_Vessel_TankMapping",
-                            param: parameters,
-                            transaction: Transaction,
-                            commandType: CommandType.StoredProcedure
-                        );
+                    sql: "dbo.Create_Vessel_TankMapping",
+                    param: parameters,
+                    transaction: Transaction,
+                    commandType: CommandType.StoredProcedure
+                );
 
+                this.Commit();
                 return true;
             }
             catch (Exception ex)
@@ -556,7 +556,7 @@ namespace DigitalCap.Persistence.Repositories
             {
 
                 var result = await Connection.QueryAsync<Core.Models.View.Admin.Tank>(
-                    sql: "dbo.Get_Vessel_Tank_ById",
+                    sql: "dbo.Get_Vessel_Tank",
                     new
                     {
                         username = username,
@@ -573,7 +573,7 @@ namespace DigitalCap.Persistence.Repositories
                 return null;
             }
         }
-        public async Task<VesselTank> GetTanks_VesselById(Guid Id, int? Projectid)
+        public async Task<VesselTank> GetTanks_VesselById(Guid? Id, int? Projectid)
         {
             try
             {
@@ -601,33 +601,35 @@ namespace DigitalCap.Persistence.Repositories
             try
             {
                 var rowsAffected = await Connection.ExecuteAsync(
-                    sql: "dbo.Update_Vessel_TankMapping",
-                    param: new
+                    "dbo.Update_Vessel_TankMapping",
+                    new
                     {
-                        vesselTank.Id,
-                        vesselTank.ProjectId,
-                        vesselTank.VesselName,
-                        vesselTank.VesselType,
-                        vesselTank.TankName,
-                        vesselTank.TankTypeId,
-                        vesselTank.IsActive,
-                        // ❌ excluded fields:
-                        // VesselName
-                        // TemplateId
-                        // CreatedDttm
-                        // UpdateDttm
+                        Id = vesselTank.Id,
+                        VesselType = vesselTank.VesselType,
+                        ImoNumber = vesselTank.ImoNumber,
+                        TankTypeId = vesselTank.TankTypeId,
+                        TankName = vesselTank.TankName,
+                        IsActive = vesselTank.IsActive,
+                        UpdateDttm = vesselTank.UpdateDttm,
+                        IsDeleted = vesselTank.IsDeleted,
+                        Subheader = vesselTank.Subheader,
+                        RequiredInReport = vesselTank.RequiredInReport,
+                        ProjectId = vesselTank.ProjectId
                     },
                     commandType: CommandType.StoredProcedure,
                     transaction: Transaction
-                    );
+                );
 
-                return rowsAffected > 0;
+                this.Commit();
+                return rowsAffected > 0;   
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error updating vessel tank"); // optional but recommended
                 return false;
             }
         }
+
 
         public async Task<List<VesselTankDetails>> GetVesselTypeList()
         {

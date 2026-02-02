@@ -82,9 +82,15 @@ namespace DigitalCap.WebApi.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetMappedTankTypes(int projectId, string vesseltype)
         {
-            var result = _tankService.GetMappedTankTypes(projectId, vesseltype);
-            return Ok(result);
+            var result = await _tankService.GetMappedTankTypes(projectId, vesseltype);
+
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+
+            // ✅ RETURN ONLY THE DATA
+            return Ok(result.Data);
         }
+
 
 
         [HttpGet("[action]")]

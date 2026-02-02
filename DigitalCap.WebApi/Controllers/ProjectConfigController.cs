@@ -115,12 +115,16 @@ namespace DigitalCap.WebApi.Controllers
             return Ok(new { message = "Grading updated successfully", filter = 1, searchValue = 1 });
         }
 
+       
         [HttpPost("[action]")]
-        public async Task<IActionResult> DeleteGrading(int gradingId, int tankId)
+        public async Task<IActionResult> DeleteGrading([FromBody] DeleteGradingRequest request)
         {
             try
             {
-                var result = await _gradingService.DeleteGradingAsync(gradingId, tankId);
+                var result = await _gradingService.DeleteGradingAsync(
+                    request.GradingId,
+                    request.TankId
+                );
 
                 if (!result.IsSuccess)
                     return BadRequest(result.Message);
@@ -132,6 +136,7 @@ namespace DigitalCap.WebApi.Controllers
                 return BadRequest();
             }
         }
+
 
         #endregion
 
@@ -210,43 +215,38 @@ namespace DigitalCap.WebApi.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> AddNewTank([FromBody] Tank model, string imo = null, string projectId = null, bool projectTanktype = false)
+        public async Task<IActionResult> AddNewTank([FromBody] CreateTankRequest model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var username = User.Identity?.Name ?? "";
+            var username = User.Identity.Name;
 
-            var result = await _tankService.CreateTankAsync(model, imo, projectId, projectTanktype, username);
+            var result = await _tankService.CreateTankAsync(model, username);
 
             if (!result.IsSuccess)
                 return BadRequest(result.Message);
 
-            if (!string.IsNullOrEmpty(imo) && !string.IsNullOrEmpty(projectId))
-            {
-                return Ok(new { message = "Tank created successfully", filter = 1, searchValue = 1, imo = imo, projectId = projectId });
-            }
-
-            return Ok(new { message = "Tank created successfully", filter = 1, searchValue = 1 });
+            return Ok(new { message = "Tank created successfully" });
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> EditTank([FromBody] Tank model, string imo = null, string projectId = null)
+        public async Task<IActionResult> EditTank([FromBody] CreateTankRequest model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var username = User.Identity?.Name ?? "";
 
-            var result = await _tankService.UpdateTankAsync(model, imo, projectId, username);
+            var result = await _tankService.UpdateTankAsync(model, username);
 
             if (!result.IsSuccess)
                 return BadRequest(result.Message);
 
-            if (!string.IsNullOrEmpty(imo) && !string.IsNullOrEmpty(projectId))
-            {
-                return Ok(new { message = "Tank updated successfully", filter = 1, searchValue = 1, imo = imo, projectId = projectId });
-            }
+            //if (!string.IsNullOrEmpty(imo) && !string.IsNullOrEmpty(projectId))
+            //{
+            //    return Ok(new { message = "Tank updated successfully", filter = 1, searchValue = 1, imo = imo, projectId = projectId });
+            //}
 
             return Ok(new { message = "Tank updated successfully", filter = 1, searchValue = 1 });
         }

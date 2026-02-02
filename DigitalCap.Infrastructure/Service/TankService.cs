@@ -675,63 +675,42 @@ namespace DigitalCap.Infrastructure.Service
 
             return ServiceResult<GetTankForEditResponse>.Success(response);
         }
-
-        public async Task<ServiceResult<bool>> CreateTankAsync(Tank model, string imo, string projectId, bool projectTanktype, string username)
+        public async Task<ServiceResult<bool>> CreateTankAsync(CreateTankRequest model, string username)
         {
-            // Permission check
-            var permission = await _userPermissionRepository.GetRolePermissionByUserName(username,
-                EnumExtensions.GetDescription(ManagePages.ManageTank));
+            var permission = await _userPermissionRepository
+                .GetRolePermissionByUserName(username,
+                    EnumExtensions.GetDescription(ManagePages.ManageTank));
 
-            if (permission?.Edit != true)
-                return ServiceResult<bool>.Failure("AccessDenied");
+            //if (permission?.Edit != true)
+            //    return ServiceResult<bool>.Failure("AccessDenied");
 
-            // Validation
-            if (string.IsNullOrEmpty(model.TankName))
-                return ServiceResult<bool>.Failure("Tank Name Required");
-
-            if (string.IsNullOrEmpty(model.TankType))
-                return ServiceResult<bool>.Failure("Tank Type Required");
-
-            if (string.IsNullOrEmpty(model.VesselType) && string.IsNullOrEmpty(model.VesselName))
-                return ServiceResult<bool>.Failure("Please select Vessel Type or Vessel Name");
-
-            if (!string.IsNullOrEmpty(model.IMONumber) && string.IsNullOrEmpty(model.VesselName) && string.IsNullOrEmpty(model.VesselType))
-                return ServiceResult<bool>.Failure("Please select Vessel Name");
-
-            // Validate IMO and VesselName match
-            if (!string.IsNullOrEmpty(model.VesselName))
-            {
-                var vessels = await _tankRepository.GetVesselIMONo();
-                var vessel = vessels.FirstOrDefault(x => x.VesselName == model.VesselName && model.IMONumber == x.IMO);
-                if (vessel == null)
-                    return ServiceResult<bool>.Failure("Please select valid IMO number");
-            }
-
-            // Duplicate check
             var tanks = await _tankRepository.GetTanks_Vessel();
-            if (!string.IsNullOrEmpty(model.TankName) && !string.IsNullOrEmpty(model.TankType) && (!string.IsNullOrEmpty(model.VesselType) || !string.IsNullOrEmpty(model.VesselName)))
-            {
-                var isAvailable = tanks.FirstOrDefault(x => x.TankType == model.TankType && x.TankName == model.TankName && x.IMONumber == model.IMONumber && x.VesselType == model.VesselType);
-                if (isAvailable != null)
-                    return ServiceResult<bool>.Failure("This tank is already available in the section");
-            }
 
-            // Project validation
-            if (string.IsNullOrEmpty(model.VesselType) && (string.IsNullOrEmpty(projectId) || projectId == "") && string.IsNullOrEmpty(model.ProjectName))
-                return ServiceResult<bool>.Failure("Please select Project Name");
+            var duplicate = tanks.FirstOrDefault(x =>
+                x.TankName == model.TankName &&
+                x.TankType == model.TankType &&
+                x.VesselType == model.VesselType &&
+                x.IMONumber == model.IMONumber);
 
-            // Create tank entity
+            if (duplicate != null)
+                return ServiceResult<bool>.Failure("This tank already exists");
+
             var tankTypes = await _tankRepository.GetTankTypes();
-            var tanktypeId = tankTypes.FirstOrDefault(x => x.TankName == model.TankType)?.Id ?? 0;
+            var tankTypeId = tankTypes
+                .FirstOrDefault(x => x.TankName == model.TankType)?.Id ?? 0;
+
+            if (tankTypeId == 0)
+                return ServiceResult<bool>.Failure("Invalid Tank Type");
 
             var vesselTank = new VesselTank
             {
                 Id = Guid.NewGuid(),
-                TankTypeId = tanktypeId,
                 TankName = model.TankName,
                 Subheader = model.Subheader,
-                CreatedDttm = DateTime.Now,
+                TankTypeId = tankTypeId,
                 IsActive = model.Status,
+                IsDeleted = false,
+                CreatedDttm = DateTime.Now,
                 UpdateDttm = DateTime.Now
             };
 
@@ -742,48 +721,69 @@ namespace DigitalCap.Infrastructure.Service
             }
             else
             {
-                if (!string.IsNullOrEmpty(projectId))
-                {
-                    vesselTank.ProjectId = Convert.ToInt32(projectId);
-                }
-                else
-                {
-                    // Get project by IMO - simplified for now
-                    // Would need GetProjectListByIMO implementation
-                    var projectsResult = await _projectService.GetProjectName(0); // Placeholder
-                    vesselTank.ProjectId = !string.IsNullOrEmpty(projectId) ? Convert.ToInt32(projectId) : null;
-                    if (vesselTank.ProjectId.HasValue)
-                    {
-                        var vesselTypeResult = await _projectRepository.GetProjectVesselType(vesselTank.ProjectId.Value);
-                        vesselTank.VesselType = vesselTypeResult;
-                    }
-                }
                 vesselTank.ImoNumber = model.IMONumber;
+                // VesselType empty → Project based tank
+                if (string.IsNullOrEmpty(model.IMONumber))
+                    return ServiceResult<bool>.Failure("IMO Number Required");
+
+                var projects = await _projectRepository
+                    .GetProjectListByIMO(Convert.ToInt32(model.IMONumber));
+
+                if (projects == null || projects.Count == 0)
+                    return ServiceResult<bool>.Failure("No projects found for this IMO");
+
+                // project select
+                var selectedProject = projects.Count > 1
+                    ? projects.FirstOrDefault(x =>
+                        x.Text.Equals(model.ProjectName, StringComparison.OrdinalIgnoreCase))
+                    : projects.FirstOrDefault();
+
+                if (selectedProject == null)
+                    return ServiceResult<bool>.Failure("Invalid Project Name");
+
+                // set project details
+                vesselTank.ProjectId = Convert.ToInt32(selectedProject.Value);
+
+                // get vessel type from project
+                vesselTank.VesselType = await _projectRepository
+                    .GetProjectVesselType(vesselTank.ProjectId.Value);
+
+                // IMO set
+                vesselTank.ImoNumber = model.IMONumber;
+
             }
 
             await _tankRepository.CreateTank(vesselTank);
             return ServiceResult<bool>.Success(true);
         }
-
-        public async Task<ServiceResult<bool>> UpdateTankAsync(Tank model, string imo, string projectId, string username)
+        public async Task<ServiceResult<bool>> UpdateTankAsync(CreateTankRequest model, string username)
         {
             // Permission check
-            var permission = await _userPermissionRepository.GetRolePermissionByUserName(username,
-                EnumExtensions.GetDescription(ManagePages.ManageTank));
+            var permission = await _userPermissionRepository
+                .GetRolePermissionByUserName(
+                    username,
+                    EnumExtensions.GetDescription(ManagePages.ManageTank));
 
-            if (permission?.Edit != true)
-                return ServiceResult<bool>.Failure("AccessDenied");
+            //if (permission?.Edit != true)
+            //    return ServiceResult<bool>.Failure("AccessDenied");
+
+            if (string.IsNullOrWhiteSpace(model.TankName))
+                return ServiceResult<bool>.Failure("Tank Name is required");
 
             // Get existing tank
             VesselTank vesselTank;
-            if (model.ProjectId == 0 || model.ProjectId == null)
+
+            if (model.ProjectId == 0)
             {
-                vesselTank = await _tankRepository.GetTanks_VesselById(model.TankId, null);
+                vesselTank = await _tankRepository
+                    .GetTanks_VesselById(model.TankId, null);
             }
             else
             {
-                vesselTank = await _tankRepository.GetTanks_VesselById(model.TankId, model.ProjectId);
+                vesselTank = await _tankRepository
+                    .GetTanks_VesselById(model.TankId, model.ProjectId);
             }
+
 
             if (vesselTank == null)
                 return ServiceResult<bool>.Failure("Tank not found");
@@ -791,18 +791,30 @@ namespace DigitalCap.Infrastructure.Service
             // Duplicate check
             var tanks = await _tankRepository.GetTanks_Vessel();
             var tankTypes = await _tankRepository.GetTankTypes();
-            var tanktype = tankTypes.FirstOrDefault(x => x.Id == vesselTank.TankTypeId)?.TankName;
-            var isAvailable = tanks.Where(x => x.TankType == tanktype && x.TankName == model.TankName && x.IMONumber == vesselTank.ImoNumber && x.VesselType == vesselTank.VesselType && model.TankId != x.TankId).ToList();
-            if (isAvailable.Any())
-                return ServiceResult<bool>.Failure("This tank is already available in the section");
 
-            // Update tank
+            var tankTypeName = tankTypes
+                .FirstOrDefault(x => x.Id == vesselTank.TankTypeId)
+                ?.TankName;
+
+            var exists = tanks.Any(x =>
+                x.TankType == tankTypeName &&
+                x.TankName == model.TankName &&
+                x.IMONumber == vesselTank.ImoNumber &&
+                x.VesselType == vesselTank.VesselType &&
+                x.TankId != model.TankId);
+
+            if (exists)
+                return ServiceResult<bool>.Failure(
+                    "This tank is already available in the section");
+
+            // Update allowed fields only
             vesselTank.Subheader = model.Subheader;
             vesselTank.TankName = model.TankName;
             vesselTank.IsActive = model.Status;
             vesselTank.UpdateDttm = DateTime.Now;
 
             await _tankRepository.UpdateTank(vesselTank);
+
             return ServiceResult<bool>.Success(true);
         }
 

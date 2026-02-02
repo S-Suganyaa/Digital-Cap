@@ -15,6 +15,14 @@ namespace DigitalCap.Persistence.Repositories
         protected readonly IUnitOfWork _unitOfWork;
         protected IDbConnection Connection => _unitOfWork?.Connection!;
         protected IDbTransaction Transaction => _unitOfWork?.Transaction!;
+        public UserPermissionRepository(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        }
+        public void Commit()
+        {
+            _unitOfWork?.Commit();
+        }
         public async Task<PermissionViewModel> GetRolePermissionByUserName(string username, string viewname, int? projectId)
         {
             try

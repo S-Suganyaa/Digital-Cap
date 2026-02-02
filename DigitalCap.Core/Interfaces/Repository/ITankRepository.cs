@@ -34,7 +34,7 @@ namespace DigitalCap.Core.Interfaces.Repository
         Task<List<Core.Models.View.Admin.VesselTypes>> GetVesselType();
         Task<List<VesselDetails>> GetVesselIMONo();
         Task<List<Core.Models.View.Admin.Tank>> GetTanks_Vessel(string username = null);
-        Task<VesselTank> GetTanks_VesselById(Guid Id, int? Projectid);
+        Task<VesselTank> GetTanks_VesselById(Guid? Id, int? Projectid);
         Task<bool> UpdateTank(VesselTank vesselTank);
         Task<List<VesselTankDetails>> GetVesselTypeList();
         Task<List<IMOTankFilterModel>> GetProjectNames(string imoNumber);
