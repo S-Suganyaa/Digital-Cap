@@ -20,4 +20,11 @@ namespace DigitalCap.Core.Models.Grading
         public bool? IsDeleted { get; set; }
         public bool RequiredInReport { get; set; }
     }
+
+    public class DeleteGradingRequest
+    {
+        public int GradingId { get; set; }
+        public int TankId { get; set; }
+    }
+
 }

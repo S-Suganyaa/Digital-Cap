@@ -19,29 +19,15 @@ namespace DigitalCap.Core.Models.View.Admin
     public class Tank
     {
         public Guid TankId { get; set; }
-
-        [Display(Name = "Tank Name")]
         public string TankName { get; set; }
-
         public int VesselId { get; set; }
-
-        [Display(Name = "Vessel Type")]
         public string VesselType { get; set; }
-
-        [Display(Name = "Vessel Name")]
         public string VesselName { get; set; }
-
-        [Display(Name = "IMO Number")]
         public string IMONumber { get; set; }
-
-        [Display(Name = "Tank Type")]
         public string TankType { get; set; }
-
         public int TaknTypeId { get; set; }
         public bool Status { get; set; } = true;
-
         public bool IsActive { get; set; }
-
         public bool IsDeleted { get; set; }
         public List<BreadCrumb> Breadcrumbs { get; set; } = new List<BreadCrumb>();
         public string Controller { get; set; }
@@ -76,5 +62,21 @@ namespace DigitalCap.Core.Models.View.Admin
         public string Value { get; set; }
         public int ProjectId { get; set; }
     }
+
+    public class CreateTankRequest
+    {
+        public Guid? TankId { get; set; }
+        public string TankName { get; set; }
+        public string? Subheader { get; set; }
+
+        public string VesselType { get; set; }
+        public string? VesselName { get; set; }
+        public string TankType { get; set; }
+        public string? IMONumber { get; set; }
+        public string? ProjectName { get; set; }
+        public int? ProjectId { get; set; }
+        public bool Status { get; set; }
+    }
+
 
 }
