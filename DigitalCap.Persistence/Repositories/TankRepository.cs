@@ -706,5 +706,9 @@ namespace DigitalCap.Persistence.Repositories
             }
         }
 
+        public Task<IEnumerable<Core.Enumerations.ShipType>> GetShipTypes()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
