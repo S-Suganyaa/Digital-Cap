@@ -19,49 +19,49 @@ namespace DigitalCap.Core.Models.ReportConfig
         public string PartName { get; set; }
         public int SequenceNo { get; set; }
         public bool IsActive { get; set; }
-        public string CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
         //public DateTime? CreatedOn { get; set; } = DateTime.Now;
-        public bool IsDeleted { get; set; }
+        public bool? IsDeleted { get; set; }
     }
 
 
     public class VesselTypeSectionMapping
     {
         public Guid? VesselTypeNormalSectionMappingId { get; set; } = new Guid();
-        public int VesselTypePartMappingId { get; set; }
-        public int VesselTypeId { get; set; }
+        public int? VesselTypePartMappingId { get; set; }
+        public int? VesselTypeId { get; set; }
         public string SectionName { get; set; }
         public string SubHeader { get; set; }
 
-        public int Order { get; set; }
-        public int TotalCards { get; set; }
-        public int PlaceholderCount { get; set; }
-        public int FileNameCount { get; set; }
-        public bool IsActive { get; set; }
-        public string CreatedBy { get; set; }
-        public string PartName { get; set; }
-        public bool IsDeleted { get; set; }
+        public int? Order { get; set; }
+        public int? TotalCards { get; set; }
+        public int? PlaceholderCount { get; set; }
+        public int? FileNameCount { get; set; }
+        public bool? IsActive { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? PartName { get; set; }
+        public bool? IsDeleted { get; set; }
     }
 
 
     public class VesselTypeTankSectionMapping
     {
         public Guid? VessselTypeTankSectionMappingId { get; set; } = new Guid();
-        public int VesselTypePartMappingId { get; set; }
-        public int VesselTypeId { get; set; }
-        public string PartName { get; set; }
-        public int TankTypeId { get; set; }
+        public int? VesselTypePartMappingId { get; set; }
+        public int? VesselTypeId { get; set; }
+        public string? PartName { get; set; }
+        public int? TankTypeId { get; set; }
 
-        public int TotalCards { get; set; }
+        public int? TotalCards { get; set; }
 
-        public int PlaceholderCount { get; set; }
+        public int? PlaceholderCount { get; set; }
 
-        public int FileNameCount { get; set; }
+        public int? FileNameCount { get; set; }
 
-        public bool IsActive { get; set; }
-        public string CreatedBy { get; set; }
+        public bool? IsActive { get; set; }
+        public string? CreatedBy { get; set; }
 
-        public bool IsDeleted { get; set; }
+        public bool? IsDeleted { get; set; }
     }
 
     public class VesselTypeSubSectionMapping

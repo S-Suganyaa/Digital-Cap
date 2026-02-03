@@ -53,8 +53,8 @@ namespace DigitalCap.Infrastructure.Service
         }
         public async Task<ServiceResult<bool>> CreateReportPart(VesselTypeReportConfigList reportConfigList, int vesselTypeId)
         {
-            var userResult = await _securityService.GetCurrentUserAsync();
-            var modifiedBy = userResult.Data.UserName;
+            //var userResult = await _securityService.GetCurrentUserAsync();
+            var modifiedBy = "KKuppusamy@eagle.org";//userResult.Data.UserName;
 
             var result = await _reportPartRepository.CreateReportPart(reportConfigList, vesselTypeId, modifiedBy);
 

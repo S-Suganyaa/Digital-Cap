@@ -666,15 +666,14 @@ namespace DigitalCap.Persistence.Repositories
                 return null;
             }
         }
-
         public async Task<bool> UpdateStatus(List<Guid> tankIds, bool status)
         {
-            if (tankIds == null || !tankIds.Any())
+            if (tankIds == null || tankIds.Count == 0)
                 return false;
 
             try
             {
-                // Create DataTable for TVP
+                // Prepare TVP DataTable
                 var tankIdTable = new DataTable();
                 tankIdTable.Columns.Add("TankId", typeof(Guid));
 
@@ -690,17 +689,19 @@ namespace DigitalCap.Persistence.Repositories
                 );
                 parameters.Add("@Status", status);
 
-                var rows = await Connection.ExecuteAsync(
+                var affectedRows = await Connection.ExecuteAsync(
                     sql: "dbo.UpdateTankStatus",
-                    parameters,
-                    commandType: CommandType.StoredProcedure
+                    param: parameters,
+                    commandType: CommandType.StoredProcedure,
+                    transaction: Transaction
                 );
 
-                return rows > 0;
+                Commit(); // commit only after successful execution
+                return affectedRows > 0;
             }
             catch (Exception ex)
             {
-                // TODO: log exception
+                // TODO: log ex
                 return false;
             }
         }

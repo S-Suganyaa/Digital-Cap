@@ -19,6 +19,14 @@ namespace DigitalCap.Persistence.Repositories
         protected readonly IUnitOfWork _unitOfWork;
         protected IDbConnection Connection => _unitOfWork?.Connection!;
         protected IDbTransaction Transaction => _unitOfWork?.Transaction!;
+        public ReportPartRepository(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        }
+        public void Commit()
+        {
+            _unitOfWork?.Commit();
+        }
         public async Task<bool> CreateProjectReportTemplate(int vesselTypeId, string userName, int projectId, bool imoExists = false, int copyprojectId = 0)
         {
             try
@@ -35,6 +43,7 @@ namespace DigitalCap.Persistence.Repositories
                          CopyProjectId = copyprojectId
                      },
                  transaction: Transaction);
+                this.Commit();
 
                 return true;
             }
@@ -167,7 +176,7 @@ namespace DigitalCap.Persistence.Repositories
         {
             try
             {
-                var dtParts = BuildReportParts(reportConfigList.reportParts, modifiedBy);
+                var dtParts = BuildReportParts(reportConfigList.reportParts,vesselTypeId, modifiedBy);
                 var dtSections = BuildNormalSections(reportConfigList.normalSectionMappings, modifiedBy);
                 var dtTankSections = BuildTankSections(reportConfigList.tankSectionMappings, modifiedBy);
                 var dtSubSections = BuildSubSections(reportConfigList.normalSubSectionMappings, modifiedBy);
@@ -185,7 +194,7 @@ namespace DigitalCap.Persistence.Repositories
                     commandType: CommandType.StoredProcedure,
                     transaction: Transaction
                 );
-
+                this.Commit();
                 return true;
             }
             catch
@@ -194,9 +203,13 @@ namespace DigitalCap.Persistence.Repositories
             }
         }
 
-        private DataTable BuildReportParts(IEnumerable<VesselTypePartMapping>? parts, string modifiedBy)
+        private DataTable BuildReportParts(
+      IEnumerable<VesselTypePartMapping>? parts,
+      int vesselTypeId,
+      string modifiedBy)
         {
             var dt = new DataTable();
+
             dt.Columns.Add("VesselTypePartMappingId", typeof(int));
             dt.Columns.Add("VesselTypeId", typeof(int));
             dt.Columns.Add("PartName", typeof(string));
@@ -206,22 +219,20 @@ namespace DigitalCap.Persistence.Repositories
             dt.Columns.Add("IsDeleted", typeof(bool));
             dt.Columns.Add("ModifiedBy", typeof(string));
 
+        
             if (parts == null || !parts.Any())
-            {
-                dt.Rows.Add(dt.NewRow());
                 return dt;
-            }
 
             foreach (var p in parts)
             {
                 dt.Rows.Add(
                     p.vesselTypePartMappingId,
-                    p.VesselTypeId,
+                    vesselTypeId,
                     p.PartName,
                     p.SequenceNo,
                     p.IsActive,
-                    p.CreatedBy,
-                    p.IsDeleted,
+                    string.IsNullOrEmpty(p.CreatedBy) ? modifiedBy : p.CreatedBy,
+                    p.IsDeleted,          
                     modifiedBy
                 );
             }
@@ -274,9 +285,12 @@ namespace DigitalCap.Persistence.Repositories
             return dt;
         }
 
-        private DataTable BuildTankSections(IEnumerable<VesselTypeTankSectionMapping>? tanks, string modifiedBy)
+        private DataTable BuildTankSections(
+          IEnumerable<VesselTypeTankSectionMapping>? tanks,
+          string modifiedBy)
         {
             var dt = new DataTable();
+
             dt.Columns.Add("VesselTypePartMappingId", typeof(int));
             dt.Columns.Add("VesselTypeId", typeof(int));
             dt.Columns.Add("PartName", typeof(string));
@@ -298,15 +312,15 @@ namespace DigitalCap.Persistence.Repositories
             foreach (var t in tanks)
             {
                 dt.Rows.Add(
-                    t.VesselTypePartMappingId,
-                    t.VesselTypeId,
-                    t.PartName,
+                    t.VesselTypePartMappingId == 0 ? DBNull.Value : t.VesselTypePartMappingId,
+                    t.VesselTypeId == 0 ? DBNull.Value : t.VesselTypeId,
+                    string.IsNullOrWhiteSpace(t.PartName) ? DBNull.Value : t.PartName,
                     t.TankTypeId,
                     t.TotalCards,
                     t.PlaceholderCount,
                     t.FileNameCount,
                     t.IsActive,
-                    t.CreatedBy,
+                    t.CreatedBy ?? modifiedBy,
                     t.IsDeleted,
                     modifiedBy
                 );
@@ -401,7 +415,7 @@ namespace DigitalCap.Persistence.Repositories
                     commandType: CommandType.StoredProcedure,
                     transaction: Transaction
                 );
-
+                this.Commit();
                 return true;
             }
             catch
