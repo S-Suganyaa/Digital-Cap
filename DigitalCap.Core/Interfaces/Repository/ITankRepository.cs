@@ -39,5 +39,6 @@ namespace DigitalCap.Core.Interfaces.Repository
         Task<List<VesselTankDetails>> GetVesselTypeList();
         Task<List<IMOTankFilterModel>> GetProjectNames(string imoNumber);
         Task<bool> UpdateStatus(List<Guid> tankIds, bool status);
+        Task<IEnumerable<Enumerations.ShipType>> GetShipTypes();
     }
 }

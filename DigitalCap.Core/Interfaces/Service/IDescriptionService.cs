@@ -14,18 +14,19 @@ namespace DigitalCap.Core.Interfaces.Service
     {
         Task<List<ImageDescriptions>> GetAllAsync();
         Task<ImageDescriptions> GetByIdAsync(int id);
-        Task<ServiceResult<ImageDescriptions>> CreateAsync(ImageDescriptions model);
+        Task<ServiceResult<bool>> CreateAsync(ImageDescriptionDTO model);
         Task<ServiceResult<ImageDescriptions>> UpdateAsync(ImageDescriptions model);
         Task<ServiceResult<List<GradingSection>>> GetSectionNamesByTemplateNameAndVesselTypeAsync(string templateName, string vesselType);
 
         Task<ServiceResult<bool>> EditDescriptionAsync(ImageDescriptionViewModel model);
-        Task<ServiceResult<GetDescriptionForEditResponse>> EditDescriptionByIdAsync(int id, string username);
+        Task<ServiceResult<GetDescriptionForEditResponse>> GetDescriptionForEditAsync(int descriptionId, Guid sectionId, int tankTypeId, string username);
 
         Task<ServiceResult<bool>> AddNewDescriptionAsync(ImageDescriptionViewModel model);
         Task<ServiceResult<GetDescriptionForAddResponse>> GetDescriptionForAddAsync(string username);
         Task<ServiceResult<bool>> SetManageDescriptionFiltersAsync(ManageDescriptionFilterRequest request);
         Task<ServiceResult<ManageDescriptionResponse>> ManageDescriptionAsync(string username, bool isActive, int descriptionRestoreFilter, int searchDescriptionRestoreFilter);
-        Task<ServiceResult<List<string>>> GetDistinctVesselTypesAsync();
+        //Task<ServiceResult<List<string>>> GetDistinctVesselTypesAsync();
+        Task<ServiceResult<AddDescriptionMetaDTO>>GetAddDescriptionMetadataAsync(string userName);
 
     }
 }

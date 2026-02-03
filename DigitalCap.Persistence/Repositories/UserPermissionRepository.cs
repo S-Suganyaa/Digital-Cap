@@ -38,7 +38,7 @@ namespace DigitalCap.Persistence.Repositories
         }
 
 
-        //
+
 
         public async Task<List<int>> GetCurrentUserProjects(string username)
         {
