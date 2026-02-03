@@ -1,4 +1,5 @@
-﻿using DigitalCap.Core.Helpers.Constants;
+﻿using DigitalCap.Core.DTO;
+using DigitalCap.Core.Helpers.Constants;
 using DigitalCap.Core.Interfaces.Repository;
 using DigitalCap.Core.Interfaces.Service;
 using DigitalCap.Core.Models;
@@ -224,12 +225,13 @@ namespace DigitalCap.WebApi.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> ManageTankActiveCheckBox(string data, bool status, string IMO)
+        public async Task<IActionResult> ManageTankActiveCheckBox([FromBody] ManageTankStatusRequest request)
         {
-            var result = _tankService.ManageTankActiveCheckBox(data, status, IMO);
+            var result = await _tankService.ManageTankActiveCheckBox(request.Data, request.Status, request.IMO);
 
             return Ok(result);
         }
+
         [HttpGet("[action]")]
         public async Task<IActionResult> ManageTankInActiveCheckBox()
         {
@@ -242,10 +244,9 @@ namespace DigitalCap.WebApi.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> DeleteTanks(Guid tankId, string IMO, int ProjectId)
+        public async Task<IActionResult> DeleteTanks(Guid tankId, string? IMO = null, int ProjectId = 0)
         {
-            var result = _tankService.DeleteTanks(tankId, IMO, ProjectId);
-
+            var result = await _tankService.DeleteTanks(tankId, IMO, ProjectId);
             return Ok(result);
         }
 

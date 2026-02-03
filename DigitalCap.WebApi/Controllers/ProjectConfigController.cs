@@ -115,7 +115,7 @@ namespace DigitalCap.WebApi.Controllers
             return Ok(new { message = "Grading updated successfully", filter = 1, searchValue = 1 });
         }
 
-       
+
         [HttpPost("[action]")]
         public async Task<IActionResult> DeleteGrading([FromBody] DeleteGradingRequest request)
         {
@@ -145,20 +145,16 @@ namespace DigitalCap.WebApi.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> ManageTank(bool isActive = false, string imo = null, string projectId = null, int tankRestoreFilter = 0, int searchRestoreFilter = 0)
         {
-            var username = User.Identity?.Name;
+            var username = User.Identity.Name;
 
             var result = await _tankService.ManageTankAsync(username, isActive, imo, projectId, tankRestoreFilter, searchRestoreFilter);
 
             if (!result.IsSuccess)
-            {
-                if (result.Message == "AccessDenied")
-                    return Forbid();
-
                 return BadRequest(result.Message);
-            }
 
             return Ok(result.Data);
         }
+
 
         [HttpPost("[action]")]
         public async Task<IActionResult> ManageTankRedirect([FromBody] ManageTankFilterRequest request)

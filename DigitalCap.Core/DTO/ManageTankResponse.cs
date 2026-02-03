@@ -26,4 +26,12 @@ namespace DigitalCap.Core.DTO
         public List<TankFilterModel> VesselTypeOptions { get; set; }
         public List<TankFilterModel> VesselNameOptions { get; set; }
     }
+
+    public class ManageTankStatusRequest
+    {
+        public List<Guid> Data { get; set; }
+        public bool Status { get; set; }
+        public string? IMO { get; set; }
+    }
+
 }

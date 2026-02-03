@@ -68,6 +68,7 @@ namespace DigitalCap.Persistence.Extensions
             services.AddScoped<IUserAccountService, UserAccountService>();
             services.AddScoped<IDescriptionService, DescriptionService>();
             services.AddScoped<IExportService, ExportService>();
+            services.AddScoped<IReportPartService,ReportPartService>();
 
             //services.AddTransient(serviceProvider =>
             //{

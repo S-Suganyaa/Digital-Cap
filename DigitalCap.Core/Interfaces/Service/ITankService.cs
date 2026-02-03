@@ -34,8 +34,6 @@ namespace DigitalCap.Core.Interfaces.Service
         Task<ServiceResult<List<string>>> ManageTankFilter_TankType(string IMO);
         Task<ServiceResult<List<IMOTankFilterModel>>> ManageTankFilter_Project(string IMO);
         Task<ServiceResult<List<Core.Models.View.Admin.Tank>>> DeleteTanks(Guid tankId, string IMO, int ProjectId);
-        Task<ServiceResult<TanksViewModel>> ManageTankActiveCheckBox(string data, bool status, string IMO);
-
         // New API methods
         Task<ServiceResult<ManageTankResponse>> ManageTankAsync(string username, bool isActive, string imo, string projectId, int tankRestoreFilter, int searchRestoreFilter);
         Task<ServiceResult<bool>> SetManageTankFiltersAsync(ManageTankFilterRequest request);
@@ -45,5 +43,6 @@ namespace DigitalCap.Core.Interfaces.Service
         Task<ServiceResult<bool>> CreateTankAsync(CreateTankRequest model, string username);
         Task<ServiceResult<bool>> UpdateTankAsync(CreateTankRequest model, string username);
         Task<ServiceResult<List<Core.Models.View.Admin.Tank>>> FilterMenuCustomization_Read();
+        Task<ServiceResult<TanksViewModel>> ManageTankActiveCheckBox(List<Guid> data, bool status, string? IMO);
     }
 }

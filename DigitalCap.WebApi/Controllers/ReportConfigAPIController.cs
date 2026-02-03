@@ -16,7 +16,7 @@ namespace DigitalCap.WebApi.Controllers
         private readonly IReportPartService _reportPartService;
         private readonly ISecurityService _securityService;
         public IWebHostEnvironment WebHostEnvironment { get; set; }
-        public ReportConfigAPIController(ReportPartService reportPartService, IConfiguration configData,
+        public ReportConfigAPIController(IReportPartService reportPartService, IConfiguration configData,
             ISecurityService securityService)
         {
             _reportPartService = reportPartService;
@@ -40,7 +40,7 @@ namespace DigitalCap.WebApi.Controllers
                 return NotFound("No report parts found for the specified Vessel Type.");
             }
 
-            return Ok(reportParts);
+            return Ok(reportParts.Data.reportTemplates);
         }
 
         [HttpGet("[action]")]
@@ -62,7 +62,7 @@ namespace DigitalCap.WebApi.Controllers
             return Ok(reportParts);
         }
 
-        [HttpGet("[action]/{vesselTypeId}/{partId}")]
+        [HttpGet("[action]")]
         public async Task<IActionResult> GetSectionNamesByPartId(int vesselTypeId, int partId)
         {
             if (vesselTypeId == 0)
@@ -78,7 +78,7 @@ namespace DigitalCap.WebApi.Controllers
                 return NotFound("No report parts found for the specified Vessel Type.");
             }
 
-            return Ok(reportParts);
+            return Ok(reportParts.Data);
         }
         [HttpPost("[action]")]
         public async Task<ActionResult> CreateReportPartConfig(VesselTypeReportConfigList reportConfigList, [FromQuery] int vesselTypeId)

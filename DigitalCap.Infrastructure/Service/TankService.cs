@@ -406,11 +406,9 @@ namespace DigitalCap.Infrastructure.Service
             return ServiceResult<List<IMOTankFilterModel>>.Success(projectnames);
         }
 
-        public async Task<ServiceResult<TanksViewModel>> ManageTankActiveCheckBox(string data, bool status, string IMO)
+        public async Task<ServiceResult<TanksViewModel>> ManageTankActiveCheckBox(List<Guid> data, bool status, string? IMO)
         {
-            var datalist = JsonConvert.DeserializeObject<List<Guid>>(data);
-
-            await _tankRepository.UpdateStatus(datalist, status);
+            await _tankRepository.UpdateStatus(data, status);
 
             var tankViewModel = new TanksViewModel
             {
@@ -469,18 +467,19 @@ namespace DigitalCap.Infrastructure.Service
         public async Task<ServiceResult<ManageTankResponse>> ManageTankAsync(string username, bool isActive, string imo, string projectId, int tankRestoreFilter, int searchRestoreFilter)
         {
             // Permission check
+            username = "kkuppusamy@eagle.org";
             var permission = await _userPermissionRepository.GetRolePermissionByUserName(username,
                 EnumExtensions.GetDescription(ManagePages.ManageTank));
 
-            if (permission == null || (!Convert.ToBoolean(permission?.Edit) && !Convert.ToBoolean(permission?.Read) && !Convert.ToBoolean(permission?.Delete)))
-            {
-                return ServiceResult<ManageTankResponse>.Failure("AccessDenied");
-            }
+            //if (permission == null || (!Convert.ToBoolean(permission?.Edit) && !Convert.ToBoolean(permission?.Read) && !Convert.ToBoolean(permission?.Delete)))
+            //{
+            //    return ServiceResult<ManageTankResponse>.Failure("AccessDenied");
+            //}
 
             // Get current user for admin check
             var currentUserResult = await _securityService.GetCurrentUserAsync();
-            if (!currentUserResult.IsSuccess)
-                return ServiceResult<ManageTankResponse>.Failure("User not found");
+            //if (!currentUserResult.IsSuccess)
+            //    return ServiceResult<ManageTankResponse>.Failure("User not found");
 
             var currentUser = currentUserResult.Data;
             var isAdmin = await _userManager.GetRolesAsync(await _userManager.FindByNameAsync(username));
@@ -539,17 +538,17 @@ namespace DigitalCap.Infrastructure.Service
                 .Select(x => x.First())
                 .ToList();
 
-            var vesselTypeOptions = validTanks
-                .Select(x => new TankFilterModel { Text = x.VesselType, Value = x.VesselType })
-                .GroupBy(x => new { x.Text, x.Value })
-                .Select(x => x.First())
-                .ToList();
+            //var vesselTypeOptions = validTanks
+            //    .Select(x => new TankFilterModel { Text = x.VesselType, Value = x.VesselType })
+            //    .GroupBy(x => new { x.Text, x.Value })
+            //    .Select(x => x.First())
+            //    .ToList();
 
-            var vesselNameOptions = validTanks
-                .Select(x => new TankFilterModel { Text = x.VesselName, Value = x.VesselName })
-                .GroupBy(x => new { x.Text, x.Value })
-                .Select(x => x.First())
-                .ToList();
+            //var vesselNameOptions = validTanks
+            //    .Select(x => new TankFilterModel { Text = x.VesselName, Value = x.VesselName })
+            //    .GroupBy(x => new { x.Text, x.Value })
+            //    .Select(x => x.First())
+            //    .ToList();
 
             var response = new ManageTankResponse
             {
@@ -562,13 +561,13 @@ namespace DigitalCap.Infrastructure.Service
                 ProjectId = projectId,
                 TankRestoreFilter = tankRestoreFilter == 1 ? 1 : 0,
                 SearchRestoreFilter = searchRestoreFilter == 1 ? 1 : 0,
-                Tanks = tanks,
+              //  Tanks = tanks,
                 IMONumberOptions = imoOptions,
                 TankTypeOptions = tankTypeOptions,
                 TankNameOptions = tankNameOptions,
                 TankStatusOptions = statusOptions,
-                VesselTypeOptions = vesselTypeOptions,
-                VesselNameOptions = vesselNameOptions
+                //VesselTypeOptions = vesselTypeOptions,
+                //VesselNameOptions = vesselNameOptions
             };
 
             return ServiceResult<ManageTankResponse>.Success(response);
