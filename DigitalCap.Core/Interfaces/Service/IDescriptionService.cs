@@ -15,7 +15,7 @@ namespace DigitalCap.Core.Interfaces.Service
         Task<List<ImageDescriptions>> GetAllAsync();
         Task<ImageDescriptions> GetByIdAsync(int id);
         Task<ServiceResult<bool>> CreateAsync(ImageDescriptionDTO model);
-        Task<ServiceResult<ImageDescriptions>> UpdateAsync(ImageDescriptions model);
+        Task<ServiceResult<ImageDescriptionViewModel>> UpdateAsync(ImageDescriptionViewModel model);
         Task<ServiceResult<List<GradingSection>>> GetSectionNamesByTemplateNameAndVesselTypeAsync(string templateName, string vesselType);
 
         Task<ServiceResult<bool>> EditDescriptionAsync(ImageDescriptionViewModel model);

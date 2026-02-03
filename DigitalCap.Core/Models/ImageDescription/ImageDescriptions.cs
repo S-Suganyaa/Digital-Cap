@@ -23,7 +23,7 @@ namespace DigitalCap.Core.Models.ImageDescription
         public DateTime UpdatedDttm { get; set; }
 
         public int? TankTypeId { get; set; }
-        
+
         public bool IsActive { get; set; } = true;
 
         public bool IsDeleted { get; set; }

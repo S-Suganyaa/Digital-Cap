@@ -46,7 +46,7 @@ namespace DigitalCap.WebApi.Controllers
         {
             var username = User.Identity?.Name;
 
-            var result = await _descriptionService.ManageDescriptionAsync(username, isActive,descriptionRestoreFilter,searchDescriptionRestoreFilter);
+            var result = await _descriptionService.ManageDescriptionAsync(username, isActive, descriptionRestoreFilter, searchDescriptionRestoreFilter);
 
             if (!result.IsSuccess)
             {
@@ -159,16 +159,11 @@ namespace DigitalCap.WebApi.Controllers
         //}
 
 
-        [HttpPut("[action]/{id}")]
-        public async Task<IActionResult> UpdateImageDescription(
-    int id,
-    [FromBody] ImageDescriptions model)
+        [HttpPost("[action]")]
+        public async Task<IActionResult> UpdateImageDescription([FromBody] ImageDescriptionViewModel model)
         {
             if (model == null)
                 return BadRequest("Invalid request");
-
-            // Ensure route ID & body ID are in sync
-            model.Id = id;
 
             var result = await _descriptionService.UpdateAsync(model);
 
@@ -201,7 +196,7 @@ namespace DigitalCap.WebApi.Controllers
 
 
         [HttpPut("[action]")]
-        public async Task<IActionResult> UpdateDescription(int id, ImageDescriptions model)
+        public async Task<IActionResult> UpdateDescription(int id, ImageDescriptionViewModel model)
         {
             model.Id = id;
             var result = await _descriptionService.UpdateAsync(model);

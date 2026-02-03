@@ -272,7 +272,7 @@ namespace DigitalCap.Infrastructure.Service
                 ? section.TanktypeId
                 : null,
 
-                    IsActive = model.Status,
+                    IsActive = model.isActive,
                     IsDeleted = false,
                     ProjectId = 0,
                     CreatedDttm = DateTime.UtcNow,
@@ -372,27 +372,27 @@ namespace DigitalCap.Infrastructure.Service
         //    }
         //}
 
-        public async Task<ServiceResult<ImageDescriptions>> UpdateAsync(ImageDescriptions model)
+        public async Task<ServiceResult<ImageDescriptionViewModel>> UpdateAsync(ImageDescriptionViewModel model)
         {
             var entity = await _descriptionRepository.GetImageDescriptionById(model.Id);
             if (entity == null)
-                return ServiceResult<ImageDescriptions>.Failure("Not found");
+                return ServiceResult<ImageDescriptionViewModel>.Failure("Not found");
 
             var exists = await _descriptionRepository.CheckImageDescriptionExistsOrNot(
                         model.VesselType,
                         model.SectionName,
                         model.TemplateName,
-                        model.Description);
+                        model.DescriptionName);
 
             if (exists.Any(x => x.Id != model.Id))
-                return ServiceResult<ImageDescriptions>.Failure("Duplicate");
+                return ServiceResult<ImageDescriptionViewModel>.Failure("Duplicate");
 
-            entity.Description = model.Description;
-            entity.IsActive = model.IsActive;
+            entity.Description = model.DescriptionName;
+            entity.IsActive = model.isActive;
             entity.UpdatedDttm = DateTime.UtcNow;
 
             await _descriptionRepository.UpdateImageDescription(entity);
-            return ServiceResult<ImageDescriptions>.Success(model);
+            return ServiceResult<ImageDescriptionViewModel>.Success(model);
         }
 
         public async Task<ServiceResult<List<GradingSection>>> GetSectionNamesByTemplateNameAndVesselTypeAsync(string templateName, string vesselType)
@@ -444,7 +444,7 @@ namespace DigitalCap.Infrastructure.Service
 
             // Update entity
             description.Description = model.DescriptionName;
-            description.IsActive = model.Status;
+            description.IsActive = model.isActive;
             description.UpdatedDttm = DateTime.UtcNow;
 
             await _descriptionRepository.UpdateImageDescription(description);
