@@ -176,7 +176,7 @@ namespace DigitalCap.Persistence.Repositories
         {
             try
             {
-                var dtParts = BuildReportParts(reportConfigList.reportParts,vesselTypeId, modifiedBy);
+                var dtParts = BuildReportParts(reportConfigList.reportParts, vesselTypeId, modifiedBy);
                 var dtSections = BuildNormalSections(reportConfigList.normalSectionMappings, modifiedBy);
                 var dtTankSections = BuildTankSections(reportConfigList.tankSectionMappings, modifiedBy);
                 var dtSubSections = BuildSubSections(reportConfigList.normalSubSectionMappings, modifiedBy);
@@ -203,10 +203,47 @@ namespace DigitalCap.Persistence.Repositories
             }
         }
 
+        //  private DataTable BuildReportParts(
+        //IEnumerable<VesselTypePartMapping>? parts,
+        //int vesselTypeId,
+        //string modifiedBy)
+        //  {
+        //      var dt = new DataTable();
+
+        //      dt.Columns.Add("VesselTypePartMappingId", typeof(int));
+        //      dt.Columns.Add("VesselTypeId", typeof(int));
+        //      dt.Columns.Add("PartName", typeof(string));
+        //      dt.Columns.Add("SequenceNo", typeof(int));
+        //      dt.Columns.Add("IsActive", typeof(bool));
+        //      dt.Columns.Add("CreatedBy", typeof(string));
+        //      dt.Columns.Add("IsDeleted", typeof(bool));
+        //      dt.Columns.Add("ModifiedBy", typeof(string));
+
+
+        //      if (parts == null || !parts.Any())
+        //          return dt;
+
+        //      foreach (var p in parts)
+        //      {
+        //          dt.Rows.Add(
+        //              p.vesselTypePartMappingId,
+        //              vesselTypeId,
+        //              p.PartName,
+        //              p.SequenceNo,
+        //              p.IsActive,
+        //              string.IsNullOrEmpty(p.CreatedBy) ? modifiedBy : p.CreatedBy,
+        //              p.IsDeleted,          
+        //              modifiedBy
+        //          );
+        //      }
+
+        //      return dt;
+        //  }
+
         private DataTable BuildReportParts(
-      IEnumerable<VesselTypePartMapping>? parts,
-      int vesselTypeId,
-      string modifiedBy)
+    IEnumerable<VesselTypePartMapping>? parts,
+    int vesselTypeId,
+    string modifiedBy)
         {
             var dt = new DataTable();
 
@@ -219,22 +256,23 @@ namespace DigitalCap.Persistence.Repositories
             dt.Columns.Add("IsDeleted", typeof(bool));
             dt.Columns.Add("ModifiedBy", typeof(string));
 
-        
+            // 🔴 CRITICAL FIX
             if (parts == null || !parts.Any())
-                return dt;
+                return dt;   // ✅ DO NOT ADD EMPTY ROW
 
             foreach (var p in parts)
             {
                 dt.Rows.Add(
-                    p.vesselTypePartMappingId,
-                    vesselTypeId,
-                    p.PartName,
-                    p.SequenceNo,
-                    p.IsActive,
-                    string.IsNullOrEmpty(p.CreatedBy) ? modifiedBy : p.CreatedBy,
-                    p.IsDeleted,          
-                    modifiedBy
-                );
+      p.vesselTypePartMappingId == 0 ? DBNull.Value : p.vesselTypePartMappingId,
+      vesselTypeId,
+      p.PartName,
+      p.SequenceNo,
+      p.IsActive,
+      string.IsNullOrEmpty(p.CreatedBy) ? modifiedBy : p.CreatedBy,
+      p.IsDeleted ?? false,
+      modifiedBy
+  );
+
             }
 
             return dt;
