@@ -23,7 +23,7 @@ namespace DigitalCap.Core.ViewModels
         public string TemplateName { get; set; }
         public string SectionName { get; set; }
         public string DescriptionName { get; set; }
-        public bool Status { get; set; }
+        public bool isActive { get; set; }
 
         public Guid? SectionId { get; set; }
         public int? TankTypeId { get; set; }
