@@ -142,8 +142,9 @@ namespace DigitalCap.Persistence.Repositories
                     },
                     transaction: Transaction,
                     commandType: CommandType.StoredProcedure);
-
+                this.Commit();
                 return true;
+
             }
             catch
             {
