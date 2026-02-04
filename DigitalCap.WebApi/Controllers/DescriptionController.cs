@@ -195,7 +195,7 @@ namespace DigitalCap.WebApi.Controllers
         //}
 
 
-        [HttpPut("[action]")]
+        [HttpPost("[action]")]
         public async Task<IActionResult> UpdateDescription(int id, ImageDescriptionViewModel model)
         {
             model.Id = id;
