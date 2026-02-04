@@ -19,15 +19,16 @@ namespace DigitalCap.Core.ViewModels
 
     public class ImageDescriptionViewModel
     {
+        public int Id { get; set; }
         public string VesselType { get; set; }
         public string TemplateName { get; set; }
         public string SectionName { get; set; }
         public string DescriptionName { get; set; }
-        public bool isActive { get; set; }
+        public bool IsActive { get; set; }
 
         public Guid? SectionId { get; set; }
         public int? TankTypeId { get; set; }
-        public int Id { get; set; }
+      
     }
 
 }

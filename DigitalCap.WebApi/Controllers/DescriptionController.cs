@@ -165,12 +165,17 @@ namespace DigitalCap.WebApi.Controllers
             if (model == null)
                 return BadRequest("Invalid request");
 
+            if (model.Id <= 0)
+                return BadRequest("Invalid Id");
+            
             var result = await _descriptionService.UpdateAsync(model);
 
             if (!result.IsSuccess)
                 return BadRequest(result.Message);
+            
+            return Ok(result.Data);
 
-            return Ok(result.Data); // returns updated model
+            
         }
 
         //[HttpGet("[action]")]

@@ -272,7 +272,7 @@ namespace DigitalCap.Infrastructure.Service
                 ? section.TanktypeId
                 : null,
 
-                    IsActive = model.isActive,
+                    IsActive = model.IsActive,
                     IsDeleted = false,
                     ProjectId = 0,
                     CreatedDttm = DateTime.UtcNow,
@@ -388,7 +388,9 @@ namespace DigitalCap.Infrastructure.Service
                 return ServiceResult<ImageDescriptionViewModel>.Failure("Duplicate");
 
             entity.Description = model.DescriptionName;
-            entity.IsActive = model.isActive;
+            entity.VesselType = model.VesselType;
+            entity.SectionId = model.SectionId;
+            entity.IsActive = model.IsActive;
             entity.UpdatedDttm = DateTime.UtcNow;
 
             await _descriptionRepository.UpdateImageDescription(entity);
@@ -444,7 +446,7 @@ namespace DigitalCap.Infrastructure.Service
 
             // Update entity
             description.Description = model.DescriptionName;
-            description.IsActive = model.isActive;
+            description.IsActive = model.IsActive;
             description.UpdatedDttm = DateTime.UtcNow;
 
             await _descriptionRepository.UpdateImageDescription(description);
